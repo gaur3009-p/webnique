@@ -6,39 +6,21 @@
     <title>Webnique — Premium Websites & Business Integrations</title>
     <meta name="description" content="Webnique builds premium websites that grow businesses. Custom websites, doctor/clinic sites, e-commerce, integrations & more.">
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- GSAP -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        'outfit': ['Outfit', 'sans-serif'],
-                        'space': ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        'electric-blue': '#00D4FF',
-                        'neon-purple': '#B829DD',
-                        'cyan-glow': '#00F0FF',
-                        'matte-black': '#0A0A0F',
-                        'deep-black': '#050508',
-                        'glass': 'rgba(255,255,255,0.05)',
+                        'syne': ['Syne', 'sans-serif'],
+                        'dm': ['DM Sans', 'sans-serif'],
                     }
                 }
             }
@@ -47,1650 +29,1327 @@
 
     <style>
         :root {
-            --electric-blue: #00D4FF;
-            --neon-purple: #B829DD;
-            --cyan-glow: #00F0FF;
+            --blue: #00C8FF;
+            --purple: #A020D0;
+            --cyan: #00F5FF;
+            --glow-blue: rgba(0,200,255,0.35);
+            --glow-purple: rgba(160,32,208,0.35);
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background: #050508;
-            color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
+            background: #04040A;
+            color: #fff;
             overflow-x: hidden;
-            cursor: default;
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0A0A0F; }
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--electric-blue), var(--neon-purple));
-            border-radius: 3px;
+        /* === CUSTOM MAC-STYLE CURSOR === */
+        * { cursor: none !important; }
+        #cursor-outer {
+            position: fixed;
+            width: 40px; height: 40px;
+            border: 1.5px solid rgba(0,200,255,0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%,-50%);
+            transition: width 0.3s ease, height 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            backdrop-filter: invert(5%);
+        }
+        #cursor-inner {
+            position: fixed;
+            width: 6px; height: 6px;
+            background: #00C8FF;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%,-50%);
+            box-shadow: 0 0 8px var(--blue), 0 0 16px var(--blue);
+            transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+        }
+        body:has(a:hover) #cursor-outer,
+        body:has(button:hover) #cursor-outer {
+            width: 60px; height: 60px;
+            background: rgba(0,200,255,0.08);
+            border-color: rgba(0,200,255,1);
+        }
+        body:has(a:hover) #cursor-inner,
+        body:has(button:hover) #cursor-inner {
+            width: 4px; height: 4px;
         }
 
         #three-canvas {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
+            top:0; left:0;
+            width:100%; height:100%;
+            z-index:0;
             pointer-events: none;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #04040A; }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--blue), var(--purple));
+            border-radius: 3px;
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255,255,255,0.03);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.07);
         }
-
-        .glass-strong {
-            background: rgba(255, 255, 255, 0.06);
+        .glass-md {
+            background: rgba(255,255,255,0.05);
             backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .gradient-text {
-            background: linear-gradient(135deg, #00D4FF 0%, #B829DD 50%, #00F0FF 100%);
+        .g-text {
+            background: linear-gradient(120deg, #00C8FF 0%, #A020D0 50%, #00F5FF 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
-        .gradient-text-alt {
-            background: linear-gradient(90deg, #00F0FF, #00D4FF, #B829DD);
+        .g-text-anim {
+            background: linear-gradient(90deg, #00F5FF, #00C8FF, #A020D0, #00C8FF);
+            background-size: 300% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            background-size: 200% auto;
-            animation: gradient-shift 3s ease infinite;
+            animation: gshift 4s linear infinite;
         }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% center; }
-            50% { background-position: 100% center; }
-            100% { background-position: 0% center; }
-        }
-
-        .glow-blue { box-shadow: 0 0 30px rgba(0, 212, 255, 0.4), 0 0 60px rgba(0, 212, 255, 0.1); }
-        .glow-purple { box-shadow: 0 0 30px rgba(184, 41, 221, 0.4), 0 0 60px rgba(184, 41, 221, 0.1); }
-        .text-glow { text-shadow: 0 0 20px rgba(0, 212, 255, 0.5), 0 0 40px rgba(184, 41, 221, 0.3); }
+        @keyframes gshift { to { background-position: 300% center; } }
 
         .btn-primary {
-            background: linear-gradient(135deg, #00D4FF, #B829DD);
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(135deg, #00C8FF, #A020D0);
+            position: relative; overflow: hidden;
             transition: all 0.4s ease;
         }
-
         .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.6s ease;
+            content:''; position:absolute; top:0; left:-100%;
+            width:100%; height:100%;
+            background: linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+            transition: left 0.5s ease;
         }
-
-        .btn-primary:hover::before { left: 100%; }
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.4), 0 0 60px rgba(184, 41, 221, 0.2);
-        }
+        .btn-primary:hover::before { left:100%; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,200,255,0.35); }
 
         .btn-outline {
-            border: 2px solid rgba(0, 212, 255, 0.5);
-            background: transparent;
-            transition: all 0.4s ease;
-        }
-        .btn-outline:hover {
-            border-color: #00D4FF;
-            background: rgba(0, 212, 255, 0.1);
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
-            transform: translateY(-3px);
-        }
-
-        .service-card {
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-        }
-        .service-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0, 212, 255, 0.15), 0 0 100px rgba(184, 41, 221, 0.1);
-        }
-        .service-card:hover .service-icon {
-            transform: scale(1.2) rotate(5deg);
-            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.6));
-        }
-        .service-icon { transition: all 0.4s ease; }
-
-        .portfolio-card {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s ease;
-        }
-        .portfolio-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.9) 100%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .portfolio-card:hover::after { opacity: 1; }
-        .portfolio-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.2);
-        }
-        .portfolio-card:hover .portfolio-overlay {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .portfolio-overlay {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.4s ease;
-        }
-
-        .pricing-card { transition: all 0.5s ease; }
-        .pricing-card:hover { transform: translateY(-15px); }
-        .pricing-card.premium {
-            border: 2px solid rgba(0, 212, 255, 0.3);
-            position: relative;
-        }
-        .pricing-card.premium::before {
-            content: 'MOST POPULAR';
-            position: absolute;
-            top: -12px; left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #00D4FF, #B829DD);
-            padding: 4px 20px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-
-        .testimonial-card { transition: all 0.4s ease; }
-        .testimonial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.1);
-        }
-
-        .floating-element { animation: float 6s ease-in-out infinite; }
-        .floating-element-delay-1 { animation-delay: 1s; }
-        .floating-element-delay-2 { animation-delay: 2s; }
-        .floating-element-delay-3 { animation-delay: 3s; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -4px; left: 0;
-            width: 0; height: 2px;
-            background: linear-gradient(90deg, #00D4FF, #B829DD);
-            transition: width 0.3s ease;
-        }
-        .nav-link:hover::after { width: 100%; }
-
-        .counter-value { font-variant-numeric: tabular-nums; }
-
-        .reveal { opacity: 0; transform: translateY(40px); }
-
-        .whatsapp-btn {
-            position: fixed;
-            bottom: 30px; right: 30px;
-            z-index: 9999;
-            width: 60px; height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #25D366, #128C7E);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-            transition: all 0.4s ease;
-            animation: pulse-glow-wa 3s ease-in-out infinite;
-        }
-        .whatsapp-btn:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
-        }
-
-        @keyframes pulse-glow-wa {
-            0%, 100% { box-shadow: 0 0 20px rgba(37, 211, 102, 0.4); }
-            50% { box-shadow: 0 0 40px rgba(37, 211, 102, 0.6), 0 0 80px rgba(37, 211, 102, 0.2); }
-        }
-
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-        }
-
-        .marquee-container { overflow: hidden; white-space: nowrap; }
-        .marquee-content {
-            display: inline-flex;
-            animation: marquee 30s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        .industry-card {
-            transition: all 0.4s ease;
-            cursor: pointer;
-        }
-        .industry-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(0, 212, 255, 0.4);
-            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.1);
-        }
-        .industry-card:hover .industry-icon {
-            color: #00D4FF;
-            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
-        }
-
-        .why-card { transition: all 0.4s ease; }
-        .why-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(0, 212, 255, 0.3);
-        }
-        .why-card:hover .why-number {
-            color: #00D4FF;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-        }
-
-        .form-input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1.5px solid rgba(0,200,255,0.4);
             transition: all 0.3s ease;
         }
-        .form-input:focus {
-            outline: none;
-            border-color: #00D4FF;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-            background: rgba(255, 255, 255, 0.08);
+        .btn-outline:hover {
+            border-color: #00C8FF;
+            background: rgba(0,200,255,0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0,200,255,0.2);
         }
 
-        .mobile-menu {
-            transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .nav-link { position:relative; transition:color 0.3s; }
+        .nav-link::after {
+            content:''; position:absolute; bottom:-3px; left:0;
+            width:0; height:1.5px;
+            background: linear-gradient(90deg,#00C8FF,#A020D0);
+            transition: width 0.3s;
         }
-        .mobile-menu.active { transform: translateX(0); }
+        .nav-link:hover::after { width:100%; }
 
-        .hero-3d-text { transform-style: preserve-3d; perspective: 1000px; }
+        /* Grid bg */
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(0,200,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,200,255,0.025) 1px, transparent 1px);
+            background-size: 70px 70px;
+        }
 
+        /* Loader */
         .loader {
-            position: fixed;
-            inset: 0;
-            background: #050508;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            position:fixed; inset:0; background:#04040A; z-index:10000;
+            display:flex; align-items:center; justify-content:center; flex-direction:column;
+            transition: opacity 0.8s, visibility 0.8s;
         }
-        .loader.hidden { opacity: 0; visibility: hidden; }
-        .loader-text {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: 8px;
-            background: linear-gradient(135deg, #00D4FF, #B829DD);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: loader-pulse 1.5s ease-in-out infinite;
+        .loader.gone { opacity:0; visibility:hidden; }
+        .loader-logo {
+            font-family:'Syne',sans-serif; font-size:2.5rem; font-weight:800; letter-spacing:10px;
+            background: linear-gradient(135deg,#00C8FF,#A020D0);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
         }
-        @keyframes loader-pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+        .loader-bar { width:200px; height:2px; background:rgba(255,255,255,0.08); border-radius:2px; margin-top:24px; overflow:hidden; }
+        .loader-fill { height:100%; width:0; background:linear-gradient(90deg,#00C8FF,#A020D0); animation:lfill 2.2s ease-out forwards; }
+        @keyframes lfill { to { width:100%; } }
+
+        /* Float */
+        @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+        .float { animation: floatY 6s ease-in-out infinite; }
+        .float-d1 { animation-delay:1s; }
+        .float-d2 { animation-delay:2s; }
+        .float-d3 { animation-delay:3s; }
+
+        /* Reveal */
+        .reveal { opacity:0; transform:translateY(35px); }
+
+        /* Service card */
+        .svc-card {
+            transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
         }
-        .loader-bar {
-            width: 200px; height: 3px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            margin-top: 20px;
-            overflow: hidden;
+        .svc-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(0,200,255,0.25);
+            box-shadow: 0 20px 50px rgba(0,200,255,0.1), 0 0 80px rgba(160,32,208,0.06);
         }
-        .loader-bar-fill {
-            height: 100%; width: 0%;
-            background: linear-gradient(90deg, #00D4FF, #B829DD);
-            border-radius: 3px;
-            animation: loader-fill 2s ease-out forwards;
+        .svc-icon { transition: all 0.35s ease; }
+        .svc-card:hover .svc-icon { transform: scale(1.2) rotate(6deg); filter: drop-shadow(0 0 12px rgba(0,200,255,0.5)); }
+
+        /* Portfolio scroll */
+        .port-container {
+            display:flex; gap:24px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:12px;
+            scrollbar-width:none;
         }
-        @keyframes loader-fill {
-            0% { width: 0%; }
-            100% { width: 100%; }
+        .port-container::-webkit-scrollbar { display:none; }
+        .port-item {
+            flex-shrink:0; width:380px; scroll-snap-align:start;
+            border-radius:20px; overflow:hidden; position:relative;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .port-item:hover { transform:translateY(-8px); box-shadow:0 25px 60px rgba(0,200,255,0.15); }
+
+        /* Testimonials */
+        .testi-card { transition: all 0.4s ease; }
+        .testi-card:hover { transform:translateY(-6px); box-shadow:0 15px 40px rgba(0,200,255,0.08); }
+
+        /* Pricing */
+        .price-card { transition: all 0.45s ease; }
+        .price-card:hover { transform:translateY(-14px); }
+        .price-premium {
+            border: 1.5px solid rgba(0,200,255,0.3);
+            position:relative;
+        }
+        .price-premium::before {
+            content:'MOST POPULAR'; position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+            background:linear-gradient(135deg,#00C8FF,#A020D0);
+            padding:4px 20px; border-radius:20px; font-size:0.65rem; font-weight:700; letter-spacing:2px;
+            white-space:nowrap;
         }
 
-        .cursor-glow {
-            position: fixed;
-            width: 300px; height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.3s ease;
+        /* Why card */
+        .why-card { transition: all 0.4s ease; }
+        .why-card:hover { transform:translateY(-5px); border-color:rgba(0,200,255,0.25); }
+        .why-num { transition: color 0.4s; }
+        .why-card:hover .why-num { color:#00C8FF; text-shadow:0 0 20px rgba(0,200,255,0.4); }
+
+        /* Industry card */
+        .ind-card { transition: all 0.4s ease; }
+        .ind-card:hover { transform:translateY(-6px); border-color:rgba(0,200,255,0.3); }
+
+        /* Form */
+        .f-input {
+            background:rgba(255,255,255,0.04);
+            border:1px solid rgba(255,255,255,0.08);
+            transition:all 0.3s;
+        }
+        .f-input:focus {
+            outline:none;
+            border-color:#00C8FF;
+            box-shadow:0 0 18px rgba(0,200,255,0.15);
+            background:rgba(255,255,255,0.07);
         }
 
-        .tilt-card {
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
+        /* Mobile menu */
+        .mob-menu { transform:translateX(100%); transition:transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+        .mob-menu.open { transform:translateX(0); }
+
+        /* WhatsApp */
+        .wa-btn {
+            position:fixed; bottom:28px; right:28px; z-index:9999;
+            width:58px; height:58px; border-radius:50%;
+            background:linear-gradient(135deg,#25D366,#128C7E);
+            display:flex; align-items:center; justify-content:center;
+            box-shadow:0 4px 20px rgba(37,211,102,0.4);
+            transition:all 0.4s ease;
+            animation: waglow 3s ease-in-out infinite;
+        }
+        .wa-btn:hover { transform:scale(1.12) rotate(6deg); box-shadow:0 8px 30px rgba(37,211,102,0.6); }
+        @keyframes waglow {
+            0%,100% { box-shadow:0 0 20px rgba(37,211,102,0.35); }
+            50% { box-shadow:0 0 40px rgba(37,211,102,0.6),0 0 70px rgba(37,211,102,0.2); }
         }
 
-        html { scroll-behavior: smooth; }
+        /* Marquee */
+        .marquee-wrap { overflow:hidden; white-space:nowrap; }
+        .marquee-inner { display:inline-flex; animation:marquee 30s linear infinite; }
+        @keyframes marquee { to { transform:translateX(-50%); } }
 
-        ::selection {
-            background: rgba(0, 212, 255, 0.3);
-            color: #fff;
+        /* Scroll indicator */
+        @keyframes scrollDot { 0%,100%{transform:translateY(0)} 50%{transform:translateY(12px)} }
+
+        /* AI Website Preview Canvas Styles */
+        .preview-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
         }
 
-        @media (max-width: 768px) {
-            .hero-title { font-size: 2.5rem !important; }
-            .hero-subtitle { font-size: 1rem !important; }
+        /* Selection */
+        ::selection { background:rgba(0,200,255,0.25); color:#fff; }
+
+        @media(max-width:768px){
+            .port-item { width:300px; }
+            #heroTitle { font-size:2.8rem !important; }
         }
     </style>
-<base target="_blank">
 </head>
-<body class="bg-deep-black text-white antialiased">
+<body>
 
-    <!-- Loading Screen -->
-    <div class="loader" id="loader">
-        <div class="loader-text font-outfit">WEBNIQUE</div>
-        <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+<!-- Custom Cursor -->
+<div id="cursor-outer"></div>
+<div id="cursor-inner"></div>
+
+<!-- Loader -->
+<div class="loader" id="loader">
+    <div class="loader-logo">WEBNIQUE</div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- Three.js Canvas -->
+<canvas id="three-canvas"></canvas>
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00C8FF] to-[#A020D0] flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                    <span class="font-syne font-bold text-white text-lg">W</span>
+                </div>
+                <span class="font-syne font-bold text-xl tracking-tight">Webnique</span>
+            </a>
+            <div class="hidden lg:flex items-center gap-8">
+                <a href="#about" class="nav-link text-sm font-medium text-gray-300 hover:text-white">About</a>
+                <a href="#services" class="nav-link text-sm font-medium text-gray-300 hover:text-white">Services</a>
+                <a href="#portfolio" class="nav-link text-sm font-medium text-gray-300 hover:text-white">Portfolio</a>
+                <a href="#pricing" class="nav-link text-sm font-medium text-gray-300 hover:text-white">Pricing</a>
+                <a href="#testimonials" class="nav-link text-sm font-medium text-gray-300 hover:text-white">Testimonials</a>
+                <a href="#contact" class="btn-primary px-6 py-2.5 rounded-full text-sm font-semibold text-white">Get Started</a>
+            </div>
+            <button class="lg:hidden p-2" id="mobBtn" aria-label="Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+        </div>
     </div>
+    <div class="absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 glass" id="navBg"></div>
+</nav>
 
-    <!-- Cursor Glow (Desktop Only) -->
-    <div class="cursor-glow hidden lg:block" id="cursorGlow"></div>
+<!-- Mobile Menu -->
+<div class="mob-menu fixed inset-0 z-50 bg-[#04040A]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8" id="mobMenu">
+    <button class="absolute top-6 right-6 p-2" id="closeMob">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <a href="#about" class="mob-link text-2xl font-syne font-bold">About</a>
+    <a href="#services" class="mob-link text-2xl font-syne font-bold">Services</a>
+    <a href="#portfolio" class="mob-link text-2xl font-syne font-bold">Portfolio</a>
+    <a href="#pricing" class="mob-link text-2xl font-syne font-bold">Pricing</a>
+    <a href="#testimonials" class="mob-link text-2xl font-syne font-bold">Testimonials</a>
+    <a href="#contact" class="btn-primary px-8 py-3 rounded-full text-lg font-semibold mt-4">Get Started</a>
+</div>
 
-    <!-- Three.js Background Canvas -->
-    <canvas id="three-canvas"></canvas>
+<!-- HERO -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden" id="hero">
+    <div class="absolute inset-0 grid-bg opacity-40"></div>
+    <!-- Glowing orbs -->
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl" style="background:radial-gradient(circle,#00C8FF,transparent)"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-10 blur-3xl" style="background:radial-gradient(circle,#A020D0,transparent)"></div>
 
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <a href="#" class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-electric-blue to-neon-purple flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
-                        <span class="font-outfit font-bold text-white text-lg">W</span>
-                    </div>
-                    <span class="font-outfit font-bold text-xl tracking-tight">Webnique</span>
-                </a>
-                <div class="hidden lg:flex items-center gap-8">
-                    <a href="#about" class="nav-link text-sm font-medium text-gray-300 hover:text-white">About</a>
-                    <a href="#services" class="nav-link text-sm font-medium text-gray-300 hover:text-white">Services</a>
-                    <a href="#portfolio" class="nav-link text-sm font-medium text-gray-300 hover:text-white">Portfolio</a>
-                    <a href="#pricing" class="nav-link text-sm font-medium text-gray-300 hover:text-white">Pricing</a>
-                    <a href="#testimonials" class="nav-link text-sm font-medium text-gray-300 hover:text-white">Testimonials</a>
-                    <a href="#contact" class="btn-primary px-6 py-2.5 rounded-full text-sm font-semibold text-white">Get Started</a>
-                </div>
-                <button class="lg:hidden p-2" id="mobileMenuBtn" aria-label="Open menu">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
-            </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-10 float">
+            <span class="w-2 h-2 rounded-full bg-[#00C8FF] animate-pulse"></span>
+            <span class="text-sm font-medium text-gray-300">Premium Web Development Agency</span>
         </div>
-        <div class="absolute inset-0 glass-strong opacity-0 transition-opacity duration-300 -z-10" id="navGlass"></div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu fixed inset-0 z-50 bg-deep-black/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8" id="mobileMenu">
-        <button class="absolute top-6 right-6 p-2" id="closeMobileMenu" aria-label="Close menu">
-            <i data-lucide="x" class="w-8 h-8"></i>
-        </button>
-        <a href="#about" class="text-2xl font-semibold mobile-nav-link">About</a>
-        <a href="#services" class="text-2xl font-semibold mobile-nav-link">Services</a>
-        <a href="#portfolio" class="text-2xl font-semibold mobile-nav-link">Portfolio</a>
-        <a href="#pricing" class="text-2xl font-semibold mobile-nav-link">Pricing</a>
-        <a href="#testimonials" class="text-2xl font-semibold mobile-nav-link">Testimonials</a>
-        <a href="#contact" class="btn-primary px-8 py-3 rounded-full text-lg font-semibold mt-4">Get Started</a>
+        <h1 class="font-syne font-black leading-none mb-6" id="heroTitle" style="font-size:clamp(2.8rem,8vw,6.5rem)">
+            <span class="block">We Build</span>
+            <span class="block g-text-anim">Websites That</span>
+            <span class="block">Grow Businesses</span>
+        </h1>
+        <p class="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 font-light" id="heroSub">
+            Premium websites for businesses that want <span class="text-[#00C8FF] font-medium">trust</span>,
+            <span class="text-[#A020D0] font-medium">leads</span>, and <span class="text-[#00F5FF] font-medium">growth</span>.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16" id="heroCTA">
+            <a href="#contact" class="btn-primary px-8 py-4 rounded-full text-base font-semibold text-white flex items-center gap-2">
+                <span>Start Your Project</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+            <a href="#portfolio" class="btn-outline px-8 py-4 rounded-full text-base font-semibold text-white flex items-center gap-2">
+                <span>View Our Work</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </a>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto" id="heroStats">
+            <div class="glass rounded-2xl p-5 text-center float"><div class="text-3xl sm:text-4xl font-syne font-black g-text counter" data-target="150">0</div><div class="text-xs text-gray-400 mt-1">Websites Built</div></div>
+            <div class="glass rounded-2xl p-5 text-center float float-d1"><div class="text-3xl sm:text-4xl font-syne font-black g-text counter" data-target="50">0</div><div class="text-xs text-gray-400 mt-1">Happy Clients</div></div>
+            <div class="glass rounded-2xl p-5 text-center float float-d2"><div class="text-3xl sm:text-4xl font-syne font-black g-text counter" data-target="12">0</div><div class="text-xs text-gray-400 mt-1">Industries Served</div></div>
+            <div class="glass rounded-2xl p-5 text-center float float-d3"><div class="text-3xl sm:text-4xl font-syne font-black g-text counter" data-target="99">0</div><div class="text-xs text-gray-400 mt-1">% Satisfaction</div></div>
+        </div>
     </div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+        <span class="text-xs tracking-widest uppercase">Scroll</span>
+        <div class="w-5 h-9 rounded-full border border-white/25 flex items-start justify-center p-1.5">
+            <div class="w-1 h-2.5 bg-white rounded-full" style="animation:scrollDot 1.8s ease-in-out infinite"></div>
+        </div>
+    </div>
+</section>
 
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden" id="hero">
-        <div class="absolute inset-0 grid-bg opacity-50"></div>
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 floating-element">
-                <span class="w-2 h-2 rounded-full bg-electric-blue animate-pulse"></span>
-                <span class="text-sm font-medium text-gray-300">Premium Web Development Agency</span>
+<!-- ABOUT -->
+<section class="relative py-28 sm:py-36" id="about">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                    <svg class="w-4 h-4 text-[#00C8FF]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <span class="text-sm font-medium text-gray-300">About Webnique</span>
+                </div>
+                <h2 class="font-syne font-bold text-4xl sm:text-5xl lg:text-6xl mb-6 leading-tight">
+                    Modern. Reliable.<br><span class="g-text">Result-Driven.</span>
+                </h2>
+                <p class="text-gray-400 text-lg leading-relaxed mb-6">Webnique is a premium web development agency that transforms your digital presence into a powerful business asset. We don't just build websites — we create digital experiences that convert visitors into loyal customers.</p>
+                <p class="text-gray-400 text-lg leading-relaxed mb-8">From sleek portfolio sites to complex e-commerce platforms, our team delivers world-class solutions tailored to your business goals.</p>
+                <div class="flex flex-wrap gap-3">
+                    <span class="flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium">
+                        <svg class="w-4 h-4 text-[#00C8FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Fast Delivery
+                    </span>
+                    <span class="flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium">
+                        <svg class="w-4 h-4 text-[#A020D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Premium Quality
+                    </span>
+                    <span class="flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium">
+                        <svg class="w-4 h-4 text-[#00F5FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Smart Integrations
+                    </span>
+                </div>
             </div>
-            <h1 class="hero-title font-outfit font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl leading-none mb-6 hero-3d-text" id="heroTitle">
-                <span class="block">We Build</span>
-                <span class="block gradient-text-alt">Websites That</span>
-                <span class="block">Grow Businesses</span>
-            </h1>
-            <p class="hero-subtitle text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 font-light" id="heroSubtitle">
-                Premium websites for businesses that want <span class="text-electric-blue font-medium">trust</span>, 
-                <span class="text-neon-purple font-medium">leads</span>, and <span class="text-cyan-glow font-medium">growth</span>.
-            </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16" id="heroCTA">
-                <a href="#contact" class="btn-primary px-8 py-4 rounded-full text-base font-semibold text-white flex items-center gap-2">
-                    <span>Start Your Project</span>
-                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            <div class="relative reveal">
+                <div class="glass-md rounded-3xl p-3 hover:scale-[1.02] transition-transform duration-500">
+                    <canvas id="aboutCanvas" class="preview-canvas" style="height:340px"></canvas>
+                </div>
+                <div class="absolute -top-5 -right-5 glass rounded-xl p-4 float hidden sm:flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-[#00C8FF]/15 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-[#00C8FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <div><div class="text-sm font-bold">Lightning Fast</div><div class="text-xs text-gray-400">Sub-second loads</div></div>
+                </div>
+                <div class="absolute -bottom-5 -left-5 glass rounded-xl p-4 float float-d2 hidden sm:flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-[#A020D0]/15 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-[#A020D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <div><div class="text-sm font-bold">Secure & Reliable</div><div class="text-xs text-gray-400">Enterprise security</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICES -->
+<section class="relative py-28 sm:py-36" id="services">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                <svg class="w-4 h-4 text-[#A020D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span class="text-sm font-medium text-gray-300">Our Services</span>
+            </div>
+            <h2 class="font-syne font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
+                Everything Your Business<br><span class="g-text">Needs to Thrive Online</span>
+            </h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto">From stunning designs to powerful integrations, we deliver complete digital solutions.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Service cards - dynamically generated via JS for compactness -->
+            <div id="servicesGrid"></div>
+        </div>
+    </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="relative py-28 sm:py-36" id="portfolio">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                <svg class="w-4 h-4 text-[#00C8FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span class="text-sm font-medium text-gray-300">Our Portfolio</span>
+            </div>
+            <h2 class="font-syne font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
+                Websites That <span class="g-text">Speak Results</span>
+            </h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto">Scroll through our latest work — each site built for impact.</p>
+        </div>
+        <div class="port-container reveal" id="portContainer">
+            <!-- Items injected by JS -->
+        </div>
+        <div class="flex justify-center gap-2 mt-6" id="portDots"></div>
+    </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="relative py-28 sm:py-36" id="industries">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                <svg class="w-4 h-4 text-[#00F5FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="text-sm font-medium text-gray-300">Industries We Serve</span>
+            </div>
+            <h2 class="font-syne font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
+                Trusted By <span class="g-text">Every Industry</span>
+            </h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="ind-card glass rounded-2xl p-6 text-center reveal border border-transparent">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#00C8FF]/10 flex items-center justify-center"><svg class="w-7 h-7 text-gray-400 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+                <h3 class="font-semibold text-sm">Doctors</h3>
+            </div>
+            <div class="ind-card glass rounded-2xl p-6 text-center reveal border border-transparent">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#A020D0]/10 flex items-center justify-center"><svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6a6 6 0 100 12 6 6 0 000-12z"/></svg></div>
+                <h3 class="font-semibold text-sm">Dentists</h3>
+            </div>
+            <div class="ind-card glass rounded-2xl p-6 text-center reveal border border-transparent">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#00F5FF]/10 flex items-center justify-center"><svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
+                <h3 class="font-semibold text-sm">Clinics</h3>
+            </div>
+            <div class="ind-card glass rounded-2xl p-6 text-center reveal border border-transparent">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#00C8FF]/10 flex items-center justify-center"><svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg></div>
+                <h3 class="font-semibold text-sm">Salons</h3>
+            </div>
+            <div class="ind-card glass rounded-2xl p-6 text-center reveal border border-transparent">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#A020D0]/10 flex items-center justify-center"><svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+                <h3 class="font-semibold text-sm">Gyms</h3>
+            </div>
+            <div class="ind-card glass rounded-2xl p-6 text-center reveal border border-transparent">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#00F5FF]/10 flex items-center justify-center"><svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                <h3 class="font-semibold text-sm">Startups</h3>
+            </div>
+            <div class="ind-card glass rounded-2xl p-6 text-center reveal border border-transparent">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#00C8FF]/10 flex items-center justify-center"><svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
+                <h3 class="font-semibold text-sm">Local Businesses</h3>
+            </div>
+            <div class="ind-card glass rounded-2xl p-6 text-center reveal border border-transparent">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#A020D0]/10 flex items-center justify-center"><svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/></svg></div>
+                <h3 class="font-semibold text-sm">& More</h3>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY US -->
+<section class="relative py-28 sm:py-36" id="why-us">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                <svg class="w-4 h-4 text-[#00C8FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                <span class="text-sm font-medium text-gray-300">Why Choose Us</span>
+            </div>
+            <h2 class="font-syne font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">The Webnique <span class="g-text">Advantage</span></h2>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="why-card glass rounded-2xl p-8 reveal border border-transparent"><div class="why-num text-5xl font-syne font-black text-gray-700 mb-4">01</div><h3 class="text-xl font-syne font-bold mb-3">Fast Delivery</h3><p class="text-gray-400 text-sm leading-relaxed">Get your website live in days, not months. Our streamlined process ensures quick turnaround without compromising quality.</p></div>
+            <div class="why-card glass rounded-2xl p-8 reveal border border-transparent"><div class="why-num text-5xl font-syne font-black text-gray-700 mb-4">02</div><h3 class="text-xl font-syne font-bold mb-3">Premium Quality</h3><p class="text-gray-400 text-sm leading-relaxed">Every website is crafted with attention to detail, modern design principles, and pixel-perfect execution.</p></div>
+            <div class="why-card glass rounded-2xl p-8 reveal border border-transparent"><div class="why-num text-5xl font-syne font-black text-gray-700 mb-4">03</div><h3 class="text-xl font-syne font-bold mb-3">Smart Integrations</h3><p class="text-gray-400 text-sm leading-relaxed">WhatsApp, Maps, Payments, Booking — we integrate the tools your business needs to operate efficiently.</p></div>
+            <div class="why-card glass rounded-2xl p-8 reveal border border-transparent"><div class="why-num text-5xl font-syne font-black text-gray-700 mb-4">04</div><h3 class="text-xl font-syne font-bold mb-3">Business Focused</h3><p class="text-gray-400 text-sm leading-relaxed">We design with your business goals in mind — every element is optimized for conversions and growth.</p></div>
+            <div class="why-card glass rounded-2xl p-8 reveal border border-transparent"><div class="why-num text-5xl font-syne font-black text-gray-700 mb-4">05</div><h3 class="text-xl font-syne font-bold mb-3">Trusted Support</h3><p class="text-gray-400 text-sm leading-relaxed">Our relationship doesn't end at launch. We provide ongoing support to ensure your website stays perfect.</p></div>
+            <div class="why-card glass rounded-2xl p-8 reveal border border-transparent"><div class="why-num text-5xl font-syne font-black text-gray-700 mb-4">06</div><h3 class="text-xl font-syne font-bold mb-3">Growth Ready</h3><p class="text-gray-400 text-sm leading-relaxed">SEO-friendly, mobile-responsive, and scalable — your website is built to grow with your business.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- PRICING -->
+<section class="relative py-28 sm:py-36" id="pricing">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                <svg class="w-4 h-4 text-[#A020D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                <span class="text-sm font-medium text-gray-300">Pricing</span>
+            </div>
+            <h2 class="font-syne font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">Transparent <span class="g-text">Pricing</span></h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto">No hidden fees, no surprises. Just premium work at fair prices.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div class="price-card glass rounded-3xl p-8 reveal">
+                <div class="mb-8"><h3 class="text-xl font-syne font-bold mb-2">Basic Website</h3><p class="text-gray-400 text-sm">Perfect for small businesses and startups</p></div>
+                <div class="mb-8"><span class="text-5xl font-syne font-black g-text">₹15,000</span><span class="text-gray-400 text-sm ml-2">one-time</span></div>
+                <ul class="space-y-3 mb-8 text-sm">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Responsive Design</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Contact Forms</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>WhatsApp Integration</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Google Maps</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Social Media Links</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>SEO Ready</li>
+                    <li class="flex items-center gap-3 text-gray-500"><svg class="w-5 h-5 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Booking System</li>
+                    <li class="flex items-center gap-3 text-gray-500"><svg class="w-5 h-5 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Payment Gateway</li>
+                </ul>
+                <a href="https://wa.me/917619920006?text=Hi%20Webnique!%20I%20am%20interested%20in%20the%20Basic%20Website%20plan%20(₹15,000)." target="_blank" class="btn-outline w-full py-3 rounded-full text-center font-semibold flex items-center justify-center gap-2">Get Started <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+            </div>
+            <div class="price-card price-premium glass-md rounded-3xl p-8 reveal">
+                <div class="mb-8"><h3 class="text-xl font-syne font-bold mb-2">Premium Website</h3><p class="text-gray-400 text-sm">For businesses that want it all</p></div>
+                <div class="mb-8"><span class="text-5xl font-syne font-black g-text">₹30,000</span><span class="text-gray-400 text-sm ml-2">one-time</span></div>
+                <ul class="space-y-3 mb-8 text-sm">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Everything in Basic</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Custom Premium Design</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Booking/Appointment System</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Payment Gateway Integration</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Advanced SEO Structure</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Speed Optimization</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Priority Support</li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-[#00C8FF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Analytics Setup</li>
+                </ul>
+                <a href="https://wa.me/917619920006?text=Hi%20Webnique!%20I%20am%20interested%20in%20the%20Premium%20Website%20plan%20(₹30,000)." target="_blank" class="btn-primary w-full py-3 rounded-full text-center font-semibold flex items-center justify-center gap-2">Get Premium <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="relative py-28 sm:py-36" id="testimonials">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                <svg class="w-4 h-4 text-[#00F5FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                <span class="text-sm font-medium text-gray-300">Testimonials</span>
+            </div>
+            <h2 class="font-syne font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">Loved By <span class="g-text">Our Clients</span></h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto">Real results from real businesses we've helped grow.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto" id="testiGrid">
+            <!-- Injected by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="relative py-28 sm:py-36" id="contact">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                    <svg class="w-4 h-4 text-[#00C8FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span class="text-sm font-medium text-gray-300">Get Started</span>
+                </div>
+                <h2 class="font-syne font-bold text-4xl sm:text-5xl lg:text-6xl mb-6 leading-tight">Launch Your Business<br><span class="g-text">Online Today</span></h2>
+                <p class="text-gray-400 text-lg leading-relaxed mb-8">Ready to transform your digital presence? Let's build something extraordinary together.</p>
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-[#00C8FF]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#00C8FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div>
+                        <div><div class="text-sm text-gray-400">Primary</div><a href="tel:+917619920006" class="font-semibold hover:text-[#00C8FF] transition-colors">+91 76199 20006</a></div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-[#A020D0]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#A020D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div>
+                        <div><div class="text-sm text-gray-400">Secondary</div><a href="tel:+917521900880" class="font-semibold hover:text-[#A020D0] transition-colors">+91 75219 00880</a></div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-[#00F5FF]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#00F5FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+                        <div><div class="text-sm text-gray-400">Location</div><span class="font-semibold">Kanpur, India</span></div>
+                    </div>
+                </div>
+                <a href="https://wa.me/917619920006?text=Hi%20Webnique!%20I%20want%20to%20discuss%20my%20website%20project." target="_blank" class="btn-primary px-8 py-4 rounded-full text-base font-semibold text-white inline-flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    Chat on WhatsApp
                 </a>
-                <a href="#portfolio" class="btn-outline px-8 py-4 rounded-full text-base font-semibold text-white flex items-center gap-2">
-                    <span>View Our Work</span>
-                    <i data-lucide="play" class="w-5 h-5"></i>
-                </a>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto" id="heroStats">
-                <div class="glass rounded-2xl p-6 text-center floating-element">
-                    <div class="text-3xl sm:text-4xl font-bold gradient-text counter-value" data-target="150">0</div>
-                    <div class="text-sm text-gray-400 mt-1">Websites Built</div>
+            <div class="reveal">
+                <div class="glass-md rounded-3xl p-8">
+                    <h3 class="text-2xl font-syne font-bold mb-6">Send Us a Message</h3>
+                    <form id="contactForm" class="space-y-4">
+                        <div><label class="block text-sm font-medium text-gray-400 mb-2">Your Name</label><input type="text" id="cf-name" class="f-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-500" placeholder="John Doe" required></div>
+                        <div><label class="block text-sm font-medium text-gray-400 mb-2">Phone Number</label><input type="tel" id="cf-phone" class="f-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-500" placeholder="+91 98765 43210"></div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Service Interested In</label>
+                            <select id="cf-service" class="f-input w-full px-4 py-3 rounded-xl text-white">
+                                <option value="">Select a service...</option>
+                                <option>Custom Website Development</option>
+                                <option>Business Website</option>
+                                <option>Doctor / Clinic Website</option>
+                                <option>Portfolio Website</option>
+                                <option>Landing Page</option>
+                                <option>E-commerce Website</option>
+                                <option>Website Redesign</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-400 mb-2">Your Message</label><textarea id="cf-msg" rows="4" class="f-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-500 resize-none" placeholder="Tell us about your project..."></textarea></div>
+                        <button type="submit" class="btn-primary w-full py-4 rounded-xl text-base font-semibold text-white flex items-center justify-center gap-2">Send Message <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></button>
+                    </form>
                 </div>
-                <div class="glass rounded-2xl p-6 text-center floating-element floating-element-delay-1">
-                    <div class="text-3xl sm:text-4xl font-bold gradient-text counter-value" data-target="50">0</div>
-                    <div class="text-sm text-gray-400 mt-1">Happy Clients</div>
-                </div>
-                <div class="glass rounded-2xl p-6 text-center floating-element floating-element-delay-2">
-                    <div class="text-3xl sm:text-4xl font-bold gradient-text counter-value" data-target="12">0</div>
-                    <div class="text-sm text-gray-400 mt-1">Industries Served</div>
-                </div>
-                <div class="glass rounded-2xl p-6 text-center floating-element floating-element-delay-3">
-                    <div class="text-3xl sm:text-4xl font-bold gradient-text counter-value" data-target="99">0</div>
-                    <div class="text-sm text-gray-400 mt-1">% Satisfaction</div>
-                </div>
-            </div>
-        </div>
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-            <span class="text-xs tracking-widest uppercase">Scroll</span>
-            <div class="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-2">
-                <div class="w-1.5 h-3 bg-white rounded-full animate-bounce"></div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- About Section -->
-    <section class="relative py-24 sm:py-32" id="about">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="reveal">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-                        <i data-lucide="sparkles" class="w-4 h-4 text-electric-blue"></i>
-                        <span class="text-sm font-medium text-gray-300">About Webnique</span>
-                    </div>
-                    <h2 class="font-outfit font-bold text-4xl sm:text-5xl lg:text-6xl mb-6 leading-tight">
-                        Modern. Reliable.<br>
-                        <span class="gradient-text">Result-Driven.</span>
-                    </h2>
-                    <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                        Webnique is a premium web development agency that transforms your digital presence into a powerful business asset. We don't just build websites — we create digital experiences that convert visitors into loyal customers.
-                    </p>
-                    <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                        From sleek portfolio sites to complex e-commerce platforms, our team delivers world-class solutions tailored to your business goals. Every pixel is crafted with precision, every interaction designed for impact.
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="flex items-center gap-2 px-4 py-2 rounded-full glass">
-                            <i data-lucide="check-circle" class="w-5 h-5 text-electric-blue"></i>
-                            <span class="text-sm font-medium">Fast Delivery</span>
-                        </div>
-                        <div class="flex items-center gap-2 px-4 py-2 rounded-full glass">
-                            <i data-lucide="check-circle" class="w-5 h-5 text-neon-purple"></i>
-                            <span class="text-sm font-medium">Premium Quality</span>
-                        </div>
-                        <div class="flex items-center gap-2 px-4 py-2 rounded-full glass">
-                            <i data-lucide="check-circle" class="w-5 h-5 text-cyan-glow"></i>
-                            <span class="text-sm font-medium">Smart Integrations</span>
-                        </div>
-                    </div>
+<!-- MARQUEE -->
+<section class="py-12 overflow-hidden">
+    <div class="marquee-wrap">
+        <div class="marquee-inner">
+            <span class="text-7xl sm:text-9xl font-syne font-black text-gray-800 mx-8">WEBNIQUE</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black g-text mx-8">PREMIUM SITES</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black text-gray-800 mx-8">BUSINESS GROWTH</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black g-text mx-8">SMART INTEGRATIONS</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black text-gray-800 mx-8">FAST DELIVERY</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black g-text mx-8">TRUSTED SUPPORT</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black text-gray-800 mx-8">WEBNIQUE</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black g-text mx-8">PREMIUM SITES</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black text-gray-800 mx-8">BUSINESS GROWTH</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black g-text mx-8">SMART INTEGRATIONS</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black text-gray-800 mx-8">FAST DELIVERY</span>
+            <span class="text-7xl sm:text-9xl font-syne font-black g-text mx-8">TRUSTED SUPPORT</span>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="relative py-16 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+            <div>
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00C8FF] to-[#A020D0] flex items-center justify-center"><span class="font-syne font-bold text-white text-lg">W</span></div>
+                    <span class="font-syne font-bold text-xl">Webnique</span>
                 </div>
-                <div class="relative reveal">
-                    <div class="relative">
-                        <div class="glass-strong rounded-3xl p-2 transform hover:scale-[1.02] transition-transform duration-500">
-                            <div class="relative rounded-2xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 flex items-center justify-center">
-                                <div class="text-center p-8">
-                                    <div class="w-24 h-24 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-electric-blue to-neon-purple flex items-center justify-center shadow-2xl">
-                                        <i data-lucide="code-2" class="w-12 h-12 text-white"></i>
-                                    </div>
-                                    <h3 class="text-2xl font-bold mb-2">Webnique</h3>
-                                    <p class="text-gray-400">Crafting Digital Excellence</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="absolute -top-6 -right-6 glass rounded-xl p-4 floating-element">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-electric-blue/20 flex items-center justify-center">
-                                    <i data-lucide="zap" class="w-5 h-5 text-electric-blue"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold">Lightning Fast</div>
-                                    <div class="text-xs text-gray-400">Sub-second load times</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="absolute -bottom-6 -left-6 glass rounded-xl p-4 floating-element floating-element-delay-2">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-neon-purple/20 flex items-center justify-center">
-                                    <i data-lucide="shield-check" class="w-5 h-5 text-neon-purple"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold">Secure & Reliable</div>
-                                    <div class="text-xs text-gray-400">Enterprise-grade security</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <p class="text-gray-400 text-sm leading-relaxed mb-5">Premium web development agency building websites that grow businesses.</p>
+                <div class="flex gap-3">
+                    <a href="#" class="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-[#00C8FF]/15 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke-linecap="round"/></svg></a>
+                    <a href="#" class="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-[#00C8FF]/15 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
                 </div>
+            </div>
+            <div>
+                <h4 class="font-syne font-bold mb-5">Services</h4>
+                <ul class="space-y-3">
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">Custom Websites</a></li>
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">Business Websites</a></li>
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">E-commerce</a></li>
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">Landing Pages</a></li>
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">Website Redesign</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-syne font-bold mb-5">Integrations</h4>
+                <ul class="space-y-3">
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">WhatsApp Integration</a></li>
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">Google Maps</a></li>
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">Payment Gateway</a></li>
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">Booking System</a></li>
+                    <li><a href="#services" class="text-gray-400 text-sm hover:text-[#00C8FF] transition-colors">SEO Optimization</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-syne font-bold mb-5">Contact</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-2 text-gray-400 text-sm"><svg class="w-4 h-4 text-[#00C8FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg><a href="tel:+917619920006" class="hover:text-white transition-colors">+91 76199 20006</a></li>
+                    <li class="flex items-center gap-2 text-gray-400 text-sm"><svg class="w-4 h-4 text-[#A020D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg><a href="tel:+917521900880" class="hover:text-white transition-colors">+91 75219 00880</a></li>
+                    <li class="flex items-center gap-2 text-gray-400 text-sm"><svg class="w-4 h-4 text-[#00F5FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Kanpur, India</li>
+                </ul>
             </div>
         </div>
-    </section>
-
-    <!-- Services Section -->
-    <section class="relative py-24 sm:py-32" id="services">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-                    <i data-lucide="layers" class="w-4 h-4 text-neon-purple"></i>
-                    <span class="text-sm font-medium text-gray-300">Our Services</span>
-                </div>
-                <h2 class="font-outfit font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
-                    Everything Your Business<br><span class="gradient-text">Needs to Thrive Online</span>
-                </h2>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                    From stunning designs to powerful integrations, we deliver complete digital solutions.
-                </p>
-            </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-electric-blue/20 to-electric-blue/5 flex items-center justify-center mb-6">
-                        <i data-lucide="globe" class="w-7 h-7 text-electric-blue"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Custom Website Development</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Tailor-made websites built from scratch to match your unique brand identity and business requirements.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-purple/5 flex items-center justify-center mb-6">
-                        <i data-lucide="building-2" class="w-7 h-7 text-neon-purple"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Business Websites</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Professional corporate websites that establish credibility and drive business growth.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-glow/20 to-cyan-glow/5 flex items-center justify-center mb-6">
-                        <i data-lucide="stethoscope" class="w-7 h-7 text-cyan-glow"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Doctor / Clinic Websites</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Specialized healthcare websites with appointment booking, patient portals, and medical integrations.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-electric-blue/20 to-electric-blue/5 flex items-center justify-center mb-6">
-                        <i data-lucide="briefcase" class="w-7 h-7 text-electric-blue"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Portfolio Websites</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Stunning portfolio sites that showcase your work and attract high-value clients.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-purple/5 flex items-center justify-center mb-6">
-                        <i data-lucide="rocket" class="w-7 h-7 text-neon-purple"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Landing Pages</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">High-converting landing pages optimized for maximum lead generation and sales.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-glow/20 to-cyan-glow/5 flex items-center justify-center mb-6">
-                        <i data-lucide="shopping-cart" class="w-7 h-7 text-cyan-glow"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">E-commerce Websites</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Full-featured online stores with secure payments, inventory management, and seamless checkout.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-electric-blue/20 to-electric-blue/5 flex items-center justify-center mb-6">
-                        <i data-lucide="refresh-cw" class="w-7 h-7 text-electric-blue"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Website Redesign</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Transform your outdated website into a modern, high-performing digital asset.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-purple/5 flex items-center justify-center mb-6">
-                        <i data-lucide="message-circle" class="w-7 h-7 text-neon-purple"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">WhatsApp Integration</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Direct WhatsApp chat buttons, click-to-chat features, and automated messaging systems.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-glow/20 to-cyan-glow/5 flex items-center justify-center mb-6">
-                        <i data-lucide="map-pin" class="w-7 h-7 text-cyan-glow"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Google Maps Integration</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Interactive maps, location services, and directions seamlessly embedded in your website.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-electric-blue/20 to-electric-blue/5 flex items-center justify-center mb-6">
-                        <i data-lucide="calendar-check" class="w-7 h-7 text-electric-blue"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Booking / Appointment</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Smart scheduling systems that let clients book appointments directly through your website.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-purple/5 flex items-center justify-center mb-6">
-                        <i data-lucide="mail" class="w-7 h-7 text-neon-purple"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Contact Form Setup</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Professional contact forms with validation, spam protection, and instant notifications.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-glow/20 to-cyan-glow/5 flex items-center justify-center mb-6">
-                        <i data-lucide="credit-card" class="w-7 h-7 text-cyan-glow"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Payment Gateway</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Secure payment integrations with Razorpay, Stripe, PayPal, and all major gateways.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-electric-blue/20 to-electric-blue/5 flex items-center justify-center mb-6">
-                        <i data-lucide="share-2" class="w-7 h-7 text-electric-blue"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Social Media Integration</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Connect your social profiles, embed feeds, and enable social sharing across your site.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-purple/5 flex items-center justify-center mb-6">
-                        <i data-lucide="search" class="w-7 h-7 text-neon-purple"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">SEO Friendly Websites</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Built with SEO best practices to help you rank higher and attract organic traffic.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-glow/20 to-cyan-glow/5 flex items-center justify-center mb-6">
-                        <i data-lucide="smartphone" class="w-7 h-7 text-cyan-glow"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Mobile Responsive Design</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Flawless experience on every device — from smartphones to large desktop screens.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-electric-blue/20 to-electric-blue/5 flex items-center justify-center mb-6">
-                        <i data-lucide="gauge" class="w-7 h-7 text-electric-blue"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Fast Loading Websites</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Optimized for lightning-fast load times with advanced caching and compression techniques.</p>
-                </div>
-                <div class="service-card glass rounded-2xl p-8 reveal tilt-card">
-                    <div class="service-icon w-14 h-14 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-purple/5 flex items-center justify-center mb-6">
-                        <i data-lucide="headphones" class="w-7 h-7 text-neon-purple"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Ongoing Website Support</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Reliable maintenance, updates, and technical support to keep your website running smoothly.</p>
-                </div>
-            </div>
+        <div class="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-gray-500 text-sm">© 2024 Webnique. All rights reserved.</p>
+            <div class="flex gap-6"><a href="#" class="text-gray-500 text-sm hover:text-white transition-colors">Privacy Policy</a><a href="#" class="text-gray-500 text-sm hover:text-white transition-colors">Terms of Service</a></div>
         </div>
-    </section>
+    </div>
+</footer>
 
-    <!-- Portfolio Section -->
-    <section class="relative py-24 sm:py-32" id="portfolio">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-                    <i data-lucide="image" class="w-4 h-4 text-electric-blue"></i>
-                    <span class="text-sm font-medium text-gray-300">Our Portfolio</span>
-                </div>
-                <h2 class="font-outfit font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
-                    Websites That <span class="gradient-text">Speak Results</span>
-                </h2>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                    Explore our latest projects and see how we transform ideas into stunning digital experiences.
-                </p>
+<!-- WhatsApp Float -->
+<a href="https://wa.me/917619920006?text=Hi%20Webnique!%20I%20am%20interested%20in%20your%20website%20services." target="_blank" class="wa-btn" aria-label="WhatsApp">
+    <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+// ===================== CURSOR =====================
+const cursorOuter = document.getElementById('cursor-outer');
+const cursorInner = document.getElementById('cursor-inner');
+let cx=0,cy=0,ox=0,oy=0;
+document.addEventListener('mousemove', e => { cx=e.clientX; cy=e.clientY; });
+function animCursor(){
+    ox += (cx-ox)*0.12;
+    oy += (cy-oy)*0.12;
+    cursorOuter.style.left = ox+'px';
+    cursorOuter.style.top = oy+'px';
+    cursorInner.style.left = cx+'px';
+    cursorInner.style.top = cy+'px';
+    requestAnimationFrame(animCursor);
+}
+animCursor();
+document.addEventListener('mouseleave', ()=>{ cursorOuter.style.opacity='0'; cursorInner.style.opacity='0'; });
+document.addEventListener('mouseenter', ()=>{ cursorOuter.style.opacity='1'; cursorInner.style.opacity='1'; });
+
+// ===================== LOADER =====================
+window.addEventListener('load', ()=>{
+    setTimeout(()=>{ document.getElementById('loader').classList.add('gone'); }, 2400);
+});
+
+// ===================== THREE.JS BACKGROUND =====================
+(function(){
+    const canvas = document.getElementById('three-canvas');
+    const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 100);
+    camera.position.z = 5;
+
+    // Particles
+    const geo = new THREE.BufferGeometry();
+    const N = 1200, pos = new Float32Array(N*3), col = new Float32Array(N*3);
+    for(let i=0;i<N*3;i+=3){
+        pos[i]=(Math.random()-.5)*20; pos[i+1]=(Math.random()-.5)*20; pos[i+2]=(Math.random()-.5)*18;
+        const c=Math.random();
+        if(c<0.4){ col[i]=0;col[i+1]=0.78;col[i+2]=1; }
+        else if(c<0.7){ col[i]=0.63;col[i+1]=0.13;col[i+2]=0.82; }
+        else{ col[i]=0;col[i+1]=0.96;col[i+2]=1; }
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col,3));
+    const mat = new THREE.PointsMaterial({size:0.018, vertexColors:true, transparent:true, opacity:0.85, blending:THREE.AdditiveBlending, depthWrite:false});
+    const pts = new THREE.Points(geo, mat);
+    scene.add(pts);
+
+    // Torus Knot
+    const tkg = new THREE.TorusKnotGeometry(1.8,0.45,120,18);
+    const tkm = new THREE.MeshBasicMaterial({color:0x00C8FF, wireframe:true, transparent:true, opacity:0.1});
+    const tk = new THREE.Mesh(tkg,tkm);
+    tk.position.set(4,1,-6); scene.add(tk);
+
+    // Icosahedron
+    const ig = new THREE.IcosahedronGeometry(1.4,1);
+    const im = new THREE.MeshBasicMaterial({color:0xA020D0, wireframe:true, transparent:true, opacity:0.09});
+    const ico = new THREE.Mesh(ig,im);
+    ico.position.set(-4,-1,-5); scene.add(ico);
+
+    // Ring
+    const rg = new THREE.RingGeometry(2.2,2.32,80);
+    const rm = new THREE.MeshBasicMaterial({color:0x00F5FF, side:THREE.DoubleSide, transparent:true, opacity:0.06});
+    const ring = new THREE.Mesh(rg,rm);
+    ring.position.set(0,3,-8); scene.add(ring);
+
+    // Second ring
+    const rg2 = new THREE.RingGeometry(1.5,1.58,60);
+    const rm2 = new THREE.MeshBasicMaterial({color:0xA020D0, side:THREE.DoubleSide, transparent:true, opacity:0.07});
+    const ring2 = new THREE.Mesh(rg2,rm2);
+    ring2.position.set(-3,2,-7); scene.add(ring2);
+
+    let mx=0,my=0,tx=0,ty=0;
+    document.addEventListener('mousemove', e=>{
+        mx=(e.clientX/window.innerWidth)*2-1;
+        my=-(e.clientY/window.innerHeight)*2+1;
+    });
+    function tick(){
+        requestAnimationFrame(tick);
+        tx+=(mx-tx)*0.025; ty+=(my-ty)*0.025;
+        pts.rotation.y+=0.0006; pts.rotation.x+=0.0003;
+        pts.position.x=tx*0.6; pts.position.y=ty*0.6;
+        tk.rotation.x+=0.004; tk.rotation.y+=0.003;
+        tk.position.x=4+tx*0.25; tk.position.y=1+ty*0.25;
+        ico.rotation.x-=0.003; ico.rotation.y+=0.005;
+        ico.position.x=-4+tx*0.3; ico.position.y=-1+ty*0.3;
+        ring.rotation.z+=0.001; ring.rotation.x=0.5+ty*0.1;
+        ring2.rotation.z-=0.002; ring2.rotation.y+=0.001;
+        ring.scale.setScalar(1+Math.sin(Date.now()*0.0008)*0.07);
+        renderer.render(scene, camera);
+    }
+    tick();
+    window.addEventListener('resize',()=>{
+        camera.aspect=window.innerWidth/window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth,window.innerHeight);
+    });
+})();
+
+// ===================== SERVICES GRID =====================
+const services = [
+    {icon:'🌐', title:'Custom Website Development', desc:'Tailor-made websites built from scratch to match your unique brand identity.', color:'#00C8FF'},
+    {icon:'🏢', title:'Business Websites', desc:'Professional corporate websites that establish credibility and drive growth.', color:'#A020D0'},
+    {icon:'🩺', title:'Doctor / Clinic Websites', desc:'Healthcare websites with appointment booking, patient portals, and medical integrations.', color:'#00F5FF'},
+    {icon:'💼', title:'Portfolio Websites', desc:'Stunning portfolio sites that showcase your work and attract high-value clients.', color:'#00C8FF'},
+    {icon:'🚀', title:'Landing Pages', desc:'High-converting landing pages optimized for maximum lead generation.', color:'#A020D0'},
+    {icon:'🛒', title:'E-commerce Websites', desc:'Full-featured online stores with secure payments and seamless checkout.', color:'#00F5FF'},
+    {icon:'🔄', title:'Website Redesign', desc:'Transform your outdated website into a modern, high-performing digital asset.', color:'#00C8FF'},
+    {icon:'💬', title:'WhatsApp Integration', desc:'Direct WhatsApp chat buttons, click-to-chat, and automated messaging.', color:'#A020D0'},
+    {icon:'📍', title:'Google Maps Integration', desc:'Interactive maps, location services seamlessly embedded in your site.', color:'#00F5FF'},
+    {icon:'📅', title:'Booking / Appointment', desc:'Smart scheduling systems to let clients book directly through your website.', color:'#00C8FF'},
+    {icon:'💳', title:'Payment Gateway', desc:'Secure integrations with Razorpay, Stripe, PayPal, and major gateways.', color:'#A020D0'},
+    {icon:'📱', title:'Mobile Responsive Design', desc:'Flawless experience on every device — smartphones to large desktops.', color:'#00F5FF'},
+    {icon:'🔍', title:'SEO Friendly Websites', desc:'Built with SEO best practices to rank higher and attract organic traffic.', color:'#00C8FF'},
+    {icon:'⚡', title:'Fast Loading Websites', desc:'Optimized for lightning-fast loads with advanced caching techniques.', color:'#A020D0'},
+    {icon:'🛡️', title:'Ongoing Website Support', desc:'Reliable maintenance and support to keep your website running smoothly.', color:'#00F5FF'},
+];
+const sg = document.getElementById('servicesGrid');
+sg.style.display='contents';
+services.forEach(s=>{
+    const d=document.createElement('div');
+    d.className='svc-card glass rounded-2xl p-7 reveal border border-transparent';
+    d.innerHTML=`
+        <div class="svc-icon text-4xl mb-5 inline-block">${s.icon}</div>
+        <h3 class="text-lg font-syne font-bold mb-3">${s.title}</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">${s.desc}</p>
+    `;
+    sg.parentElement.appendChild(d);
+});
+
+// ===================== PORTFOLIO (AI-generated canvas previews) =====================
+const portProjects = [
+    { title:'SkinClinic', type:'Dermatology Website', tags:['Healthcare','WhatsApp'], 
+      drawFn: function(ctx,w,h){ drawSkinClinic(ctx,w,h); } },
+    { title:'Luxe Fashion', type:'E-commerce Store', tags:['E-commerce','Payments'],
+      drawFn: function(ctx,w,h){ drawFashion(ctx,w,h); } },
+    { title:'FitPro Gym', type:'Fitness Center Website', tags:['Fitness','Booking'],
+      drawFn: function(ctx,w,h){ drawGym(ctx,w,h); } },
+    { title:'Style Studio', type:'Salon Website', tags:['Salon','Maps'],
+      drawFn: function(ctx,w,h){ drawSalon(ctx,w,h); } },
+    { title:'TechStart', type:'Startup Landing Page', tags:['Startup','Landing'],
+      drawFn: function(ctx,w,h){ drawTech(ctx,w,h); } },
+    { title:'Local Mart', type:'Local Business Website', tags:['Local Biz','SEO'],
+      drawFn: function(ctx,w,h){ drawMart(ctx,w,h); } },
+];
+
+function drawBrowserChrome(ctx,w,h,bg){
+    // Browser frame
+    ctx.fillStyle=bg||'#0F0F1A';
+    ctx.fillRect(0,0,w,h);
+    ctx.fillStyle='rgba(255,255,255,0.06)';
+    ctx.fillRect(0,0,w,36);
+    // dots
+    [[14,'#FF5F57'],[32,'#FEBC2E'],[50,'#28C840']].forEach(([x,c])=>{
+        ctx.fillStyle=c; ctx.beginPath(); ctx.arc(x,18,5,0,Math.PI*2); ctx.fill();
+    });
+    // address bar
+    ctx.fillStyle='rgba(255,255,255,0.08)';
+    ctx.beginPath(); ctx.roundRect(70,10,w-140,16,8); ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.3)';
+    ctx.font='10px DM Sans, sans-serif';
+    ctx.fillText('webnique.in/'+Math.random().toString(36).substr(2,6),80,22);
+}
+
+function roundedRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); }
+
+function drawSkinClinic(ctx,w,h){
+    drawBrowserChrome(ctx,w,h,'#0A0A14');
+    const yoff=36;
+    // Hero gradient
+    const grad=ctx.createLinearGradient(0,yoff,0,h);
+    grad.addColorStop(0,'#0D1B2A'); grad.addColorStop(1,'#1A0A2E');
+    ctx.fillStyle=grad; ctx.fillRect(0,yoff,w,h-yoff);
+    // Header
+    ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.fillRect(0,yoff,w,32);
+    ctx.fillStyle='#00C8FF'; ctx.font='bold 13px Syne, sans-serif';
+    ctx.fillText('SkinClinic',16,yoff+20);
+    // Nav items
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='9px DM Sans, sans-serif';
+    ['About','Services','Doctors','Book Now'].forEach((t,i)=>ctx.fillText(t,w-200+i*46,yoff+20));
+    // Hero content
+    ctx.fillStyle='rgba(0,200,255,0.15)';
+    ctx.beginPath(); ctx.arc(w*0.7,yoff+h*0.35,60,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(160,32,208,0.1)';
+    ctx.beginPath(); ctx.arc(w*0.65,yoff+h*0.5,40,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='white'; ctx.font='bold 18px Syne, sans-serif';
+    ctx.fillText('Advanced',24,yoff+60);
+    ctx.fillStyle='#00C8FF'; ctx.font='bold 20px Syne, sans-serif';
+    ctx.fillText('Skin Care',24,yoff+84);
+    ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='8px DM Sans, sans-serif';
+    ctx.fillText('Expert dermatology treatments',24,yoff+100);
+    ctx.fillText('& consultations',24,yoff+112);
+    // CTA btn
+    const bg2=ctx.createLinearGradient(24,yoff+122,120,yoff+140);
+    bg2.addColorStop(0,'#00C8FF'); bg2.addColorStop(1,'#A020D0');
+    ctx.fillStyle=bg2; roundedRect(ctx,24,yoff+122,100,18,9); ctx.fill();
+    ctx.fillStyle='white'; ctx.font='bold 8px DM Sans, sans-serif';
+    ctx.fillText('Book Appointment',34,yoff+134);
+    // Doctor card
+    ctx.fillStyle='rgba(255,255,255,0.05)';
+    roundedRect(ctx,w-140,yoff+50,120,90,10); ctx.fill();
+    ctx.strokeStyle='rgba(0,200,255,0.2)'; ctx.lineWidth=1;
+    roundedRect(ctx,w-140,yoff+50,120,90,10); ctx.stroke();
+    ctx.fillStyle='rgba(0,200,255,0.2)';
+    ctx.beginPath(); ctx.arc(w-80,yoff+80,20,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='white'; ctx.font='bold 9px Syne, sans-serif';
+    ctx.fillText('Dr. Priya Sharma',w-130,yoff+112);
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='7px DM Sans, sans-serif';
+    ctx.fillText('MBBS, MD Dermatology',w-128,yoff+124);
+    // Stats row
+    ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.fillRect(0,yoff+h-90-yoff,w,50);
+    ['500+','15+','98%'].forEach((v,i)=>{
+        ctx.fillStyle='#00C8FF'; ctx.font='bold 14px Syne, sans-serif';
+        ctx.fillText(v,24+i*(w/3),yoff+h-60-yoff);
+        ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='7px DM Sans, sans-serif';
+        ctx.fillText(['Patients','Years Exp.','Satisfied'][i],24+i*(w/3),yoff+h-48-yoff);
+    });
+}
+
+function drawFashion(ctx,w,h){
+    drawBrowserChrome(ctx,w,h,'#0A0A0A');
+    const y=36;
+    ctx.fillStyle='#0D0D0D'; ctx.fillRect(0,y,w,h-y);
+    ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.fillRect(0,y,w,30);
+    ctx.fillStyle='#F0C060'; ctx.font='bold 12px Syne, sans-serif';
+    ctx.fillText('LUXE',w/2-20,y+19);
+    // Product grid
+    const cards=[[10,70,80,100],[100,70,80,100],[190,70,80,100],[10,180,80,100],[100,180,80,100],[190,180,80,100]];
+    cards.forEach(([cx2,cy2,cw2,ch2],i)=>{
+        const g2=ctx.createLinearGradient(cx2,y+cy2,cx2+cw2,y+cy2+ch2);
+        const cols=[['#1A0828','#2D1040'],['#081828','#103040'],['#280810','#401020'],['#201810','#402810'],['#102018','#204030'],['#181020','#301848']];
+        g2.addColorStop(0,cols[i][0]); g2.addColorStop(1,cols[i][1]);
+        ctx.fillStyle=g2; roundedRect(ctx,cx2,y+cy2,cw2,ch2,8); ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.06)'; roundedRect(ctx,cx2,y+cy2,cw2,ch2,8); ctx.stroke&&null;
+        ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=0.5;
+        roundedRect(ctx,cx2,y+cy2,cw2,ch2,8); ctx.stroke();
+        // price tag
+        ctx.fillStyle='rgba(240,192,96,0.15)'; roundedRect(ctx,cx2+4,y+cy2+ch2-20,48,14,4); ctx.fill();
+        ctx.fillStyle='#F0C060'; ctx.font='bold 7px DM Sans, sans-serif';
+        ctx.fillText('₹'+(1299+i*500),cx2+8,y+cy2+ch2-10);
+    });
+    // CTA
+    const bg3=ctx.createLinearGradient(0,y+h-55,w,y+h-35);
+    bg3.addColorStop(0,'#F0C060'); bg3.addColorStop(1,'#E08030');
+    ctx.fillStyle=bg3; roundedRect(ctx,10,y+h-55,w-20,22,11); ctx.fill();
+    ctx.fillStyle='#0A0A0A'; ctx.font='bold 9px DM Sans, sans-serif';
+    ctx.textAlign='center'; ctx.fillText('SHOP THE COLLECTION',w/2,y+h-41); ctx.textAlign='left';
+}
+
+function drawGym(ctx,w,h){
+    drawBrowserChrome(ctx,w,h,'#05080A');
+    const y=36;
+    const g=ctx.createLinearGradient(0,y,0,h);
+    g.addColorStop(0,'#050A08'); g.addColorStop(1,'#0A1A10');
+    ctx.fillStyle=g; ctx.fillRect(0,y,w,h-y);
+    ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.fillRect(0,y,w,28);
+    ctx.fillStyle='#00FF88'; ctx.font='bold 11px Syne, sans-serif';
+    ctx.fillText('FITPRO',14,y+18);
+    // Hero text
+    ctx.fillStyle='rgba(0,255,136,0.08)';
+    ctx.beginPath(); ctx.arc(w*0.75,y+h*0.4,70,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='white'; ctx.font='bold 22px Syne, sans-serif';
+    ctx.fillText('PUSH',14,y+70); ctx.fillText('YOUR',14,y+96);
+    ctx.fillStyle='#00FF88'; ctx.fillText('LIMITS',14,y+122);
+    // Class cards
+    [['Morning HIIT','6:00 AM','12'],['Power Yoga','8:00 AM','8'],['Strength','5:30 PM','6']].forEach(([cls,time,spots],i)=>{
+        ctx.fillStyle='rgba(255,255,255,0.04)';
+        roundedRect(ctx,14+i*(w/3-8),y+h-100,w/3-16,55,8); ctx.fill();
+        ctx.fillStyle='#00FF88'; ctx.font='bold 8px DM Sans, sans-serif';
+        ctx.fillText(cls,20+i*(w/3-8),y+h-80);
+        ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='7px DM Sans, sans-serif';
+        ctx.fillText(time,20+i*(w/3-8),y+h-68);
+        ctx.fillStyle='rgba(0,255,136,0.2)'; roundedRect(ctx,20+i*(w/3-8),y+h-62,36,12,6); ctx.fill();
+        ctx.fillStyle='#00FF88'; ctx.font='6px DM Sans, sans-serif';
+        ctx.fillText(spots+' spots',23+i*(w/3-8),y+h-53);
+    });
+}
+
+function drawSalon(ctx,w,h){
+    drawBrowserChrome(ctx,w,h,'#0A0808');
+    const y=36;
+    const g=ctx.createLinearGradient(0,y,0,h);
+    g.addColorStop(0,'#120A08'); g.addColorStop(1,'#200E14');
+    ctx.fillStyle=g; ctx.fillRect(0,y,w,h-y);
+    ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.fillRect(0,y,w,30);
+    ctx.fillStyle='#FFB6C1'; ctx.font='italic bold 13px Georgia, serif';
+    ctx.fillText('Style Studio',w/2-36,y+20);
+    // Hero split
+    ctx.fillStyle='rgba(255,182,193,0.05)'; ctx.fillRect(0,y+30,w*0.55,h-y-30);
+    ctx.fillStyle='rgba(255,182,193,0.03)'; ctx.fillRect(w*0.55,y+30,w*0.45,h-y-30);
+    // Text side
+    ctx.fillStyle='rgba(255,182,193,0.6)'; ctx.font='10px DM Sans, sans-serif';
+    ctx.fillText('Premium Salon Experience',14,y+60);
+    ctx.fillStyle='white'; ctx.font='bold 18px Georgia, serif';
+    ctx.fillText('Beauty',14,y+85); ctx.fillText('Redefined',14,y+108);
+    // Services
+    ['Haircut & Styling','Color & Highlights','Spa Treatments','Nail Art'].forEach((s,i)=>{
+        ctx.fillStyle='rgba(255,255,255,0.04)'; roundedRect(ctx,14,y+120+i*22,w*0.5-20,18,6); ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='8px DM Sans, sans-serif';
+        ctx.fillText('✦ '+s,20,y+132+i*22);
+    });
+    // Image side placeholder
+    const g2=ctx.createRadialGradient(w*0.77,y+h*0.45,10,w*0.77,y+h*0.45,80);
+    g2.addColorStop(0,'rgba(255,182,193,0.2)'); g2.addColorStop(1,'transparent');
+    ctx.fillStyle=g2; ctx.fillRect(w*0.55,y+30,w*0.45,h-y-30);
+    ctx.fillStyle='rgba(255,182,193,0.15)'; ctx.beginPath(); ctx.arc(w*0.77,y+h*0.4,45,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.font='28px serif';
+    ctx.fillText('✂',w*0.73,y+h*0.42);
+}
+
+function drawTech(ctx,w,h){
+    drawBrowserChrome(ctx,w,h,'#050510');
+    const y=36;
+    const g=ctx.createLinearGradient(0,y,w,h);
+    g.addColorStop(0,'#060618'); g.addColorStop(1,'#120624');
+    ctx.fillStyle=g; ctx.fillRect(0,y,w,h-y);
+    // Grid lines
+    ctx.strokeStyle='rgba(100,100,255,0.06)'; ctx.lineWidth=0.5;
+    for(let gx=0;gx<w;gx+=30){ ctx.beginPath(); ctx.moveTo(gx,y); ctx.lineTo(gx,h); ctx.stroke(); }
+    for(let gy=y;gy<h;gy+=30){ ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(w,gy); ctx.stroke(); }
+    // Glow
+    ctx.fillStyle='rgba(100,60,255,0.12)'; ctx.beginPath(); ctx.arc(w/2,y+h*0.35,80,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(0,200,255,0.08)'; ctx.beginPath(); ctx.arc(w*0.3,y+h*0.6,50,0,Math.PI*2); ctx.fill();
+    // Badge
+    ctx.fillStyle='rgba(100,60,255,0.2)'; roundedRect(ctx,w/2-35,y+35,70,14,7); ctx.fill();
+    ctx.fillStyle='rgba(180,140,255,0.8)'; ctx.font='7px DM Sans, sans-serif';
+    ctx.textAlign='center'; ctx.fillText('🚀 Now in Beta',w/2,y+45); ctx.textAlign='left';
+    // Headline
+    ctx.fillStyle='white'; ctx.font='bold 20px Syne, sans-serif';
+    ctx.textAlign='center'; ctx.fillText('Build Faster.',w/2,y+80);
+    const gg=ctx.createLinearGradient(0,0,w,0);
+    gg.addColorStop(0,'#7B4FFF'); gg.addColorStop(1,'#00C8FF');
+    ctx.fillStyle=gg; ctx.fillText('Ship Smarter.',w/2,y+104); ctx.textAlign='left';
+    // CTA
+    const cb=ctx.createLinearGradient(w/2-55,y+115,w/2+55,y+135);
+    cb.addColorStop(0,'#7B4FFF'); cb.addColorStop(1,'#00C8FF');
+    ctx.fillStyle=cb; roundedRect(ctx,w/2-55,y+115,110,22,11); ctx.fill();
+    ctx.fillStyle='white'; ctx.font='bold 8px DM Sans, sans-serif';
+    ctx.textAlign='center'; ctx.fillText('Start Free Trial →',w/2,y+129); ctx.textAlign='left';
+    // Metrics
+    ['3x','99.9%','<1s'].forEach((v,i)=>{
+        ctx.fillStyle='rgba(255,255,255,0.05)'; roundedRect(ctx,14+i*(w/3-8),y+h-65,w/3-16,45,8); ctx.fill();
+        ctx.fillStyle='#00C8FF'; ctx.font='bold 14px Syne, sans-serif';
+        ctx.textAlign='center'; ctx.fillText(v,14+i*(w/3-8)+(w/3-16)/2,y+h-40);
+        ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='7px DM Sans, sans-serif';
+        ctx.fillText(['Faster Growth','Uptime','Load Time'][i],14+i*(w/3-8)+(w/3-16)/2,y+h-28); ctx.textAlign='left';
+    });
+}
+
+function drawMart(ctx,w,h){
+    drawBrowserChrome(ctx,w,h,'#080A06');
+    const y=36;
+    ctx.fillStyle='#0A0C08'; ctx.fillRect(0,y,w,h-y);
+    ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.fillRect(0,y,w,28);
+    ctx.fillStyle='#7DC96B'; ctx.font='bold 11px Syne, sans-serif';
+    ctx.fillText('🛒 LocalMart',10,y+18);
+    // Hero banner
+    const gb=ctx.createLinearGradient(0,y+28,w,y+90);
+    gb.addColorStop(0,'#0F1A0A'); gb.addColorStop(1,'#1A2510');
+    ctx.fillStyle=gb; ctx.fillRect(0,y+28,w,62);
+    ctx.fillStyle='white'; ctx.font='bold 14px Syne, sans-serif';
+    ctx.fillText('Fresh. Local. Delivered.',14,y+52);
+    ctx.fillStyle='rgba(125,201,107,0.8)'; ctx.font='8px DM Sans, sans-serif';
+    ctx.fillText('From farm to your doorstep in 2 hours',14,y+66);
+    ctx.fillStyle='#7DC96B'; roundedRect(ctx,14,y+72,80,16,8); ctx.fill();
+    ctx.fillStyle='#0A0A0A'; ctx.font='bold 8px DM Sans, sans-serif';
+    ctx.fillText('Order Now',32,y+83);
+    // Category pills
+    ['🍎 Fruits','🥦 Veggies','🥛 Dairy','🍞 Bakery'].forEach((c,i)=>{
+        ctx.fillStyle=i===0?'rgba(125,201,107,0.2)':'rgba(255,255,255,0.04)';
+        roundedRect(ctx,10+i*(w/4-4),y+96,w/4-8,18,9); ctx.fill();
+        ctx.fillStyle=i===0?'#7DC96B':'rgba(255,255,255,0.5)'; ctx.font='7px DM Sans, sans-serif';
+        ctx.fillText(c,16+i*(w/4-4),y+108);
+    });
+    // Product cards
+    [['🍅','Tomatoes','₹40/kg'],['🧅','Onions','₹35/kg'],['🥕','Carrots','₹55/kg']].forEach(([em,nm,pr],i)=>{
+        ctx.fillStyle='rgba(255,255,255,0.04)'; roundedRect(ctx,10+i*(w/3-4),y+122,w/3-8,55,8); ctx.fill();
+        ctx.font='20px serif'; ctx.fillText(em,w/6-10+i*(w/3-4)-6,y+145);
+        ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.font='7px DM Sans, sans-serif';
+        ctx.textAlign='center'; ctx.fillText(nm,10+i*(w/3-4)+(w/3-8)/2,y+158);
+        ctx.fillStyle='#7DC96B'; ctx.font='bold 7px DM Sans, sans-serif';
+        ctx.fillText(pr,10+i*(w/3-4)+(w/3-8)/2,y+170); ctx.textAlign='left';
+    });
+}
+
+// Build portfolio
+const pc = document.getElementById('portContainer');
+const dots = document.getElementById('portDots');
+portProjects.forEach((proj,idx)=>{
+    const item = document.createElement('div');
+    item.className='port-item';
+    item.style.background='rgba(255,255,255,0.03)';
+    item.style.border='1px solid rgba(255,255,255,0.07)';
+    item.innerHTML=`
+        <canvas id="pcanv${idx}" width="380" height="280" style="display:block;width:100%;border-radius:16px 16px 0 0"></canvas>
+        <div style="padding:18px 20px 20px">
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+                ${proj.tags.map(t=>`<span style="padding:3px 10px;border-radius:20px;font-size:0.65rem;font-weight:600;background:rgba(0,200,255,0.12);color:#00C8FF">${t}</span>`).join('')}
             </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="portfolio-card rounded-2xl overflow-hidden reveal">
-                    <div class="aspect-[4/3] bg-gradient-to-br from-electric-blue/30 to-neon-purple/30 flex items-center justify-center relative">
-                        <div class="text-center p-8">
-                            <i data-lucide="stethoscope" class="w-16 h-16 text-electric-blue/60 mb-4"></i>
-                            <h3 class="text-xl font-bold">Dr. Mamta Bhura</h3>
-                            <p class="text-gray-400 text-sm">Dermatologist Website</p>
-                        </div>
-                        <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-6 z-10">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 rounded-full bg-electric-blue/20 text-electric-blue text-xs font-medium">Healthcare</span>
-                                <span class="px-3 py-1 rounded-full bg-neon-purple/20 text-neon-purple text-xs font-medium">WhatsApp</span>
-                            </div>
-                            <h3 class="text-lg font-bold">Dr. Mamta Bhura</h3>
-                            <p class="text-gray-300 text-sm">Premium dermatology clinic website with WhatsApp integration and appointment booking.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="portfolio-card rounded-2xl overflow-hidden reveal">
-                    <div class="aspect-[4/3] bg-gradient-to-br from-neon-purple/30 to-cyan-glow/30 flex items-center justify-center relative">
-                        <div class="text-center p-8">
-                            <i data-lucide="shopping-bag" class="w-16 h-16 text-neon-purple/60 mb-4"></i>
-                            <h3 class="text-xl font-bold">Luxe Fashion</h3>
-                            <p class="text-gray-400 text-sm">E-commerce Store</p>
-                        </div>
-                        <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-6 z-10">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 rounded-full bg-neon-purple/20 text-neon-purple text-xs font-medium">E-commerce</span>
-                                <span class="px-3 py-1 rounded-full bg-cyan-glow/20 text-cyan-glow text-xs font-medium">Payments</span>
-                            </div>
-                            <h3 class="text-lg font-bold">Luxe Fashion Store</h3>
-                            <p class="text-gray-300 text-sm">High-end fashion e-commerce with payment gateway and social media integration.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="portfolio-card rounded-2xl overflow-hidden reveal">
-                    <div class="aspect-[4/3] bg-gradient-to-br from-cyan-glow/30 to-electric-blue/30 flex items-center justify-center relative">
-                        <div class="text-center p-8">
-                            <i data-lucide="dumbbell" class="w-16 h-16 text-cyan-glow/60 mb-4"></i>
-                            <h3 class="text-xl font-bold">FitPro Gym</h3>
-                            <p class="text-gray-400 text-sm">Fitness Center Website</p>
-                        </div>
-                        <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-6 z-10">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 rounded-full bg-cyan-glow/20 text-cyan-glow text-xs font-medium">Fitness</span>
-                                <span class="px-3 py-1 rounded-full bg-electric-blue/20 text-electric-blue text-xs font-medium">Booking</span>
-                            </div>
-                            <h3 class="text-lg font-bold">FitPro Gym</h3>
-                            <p class="text-gray-300 text-sm">Dynamic gym website with class booking system and membership management.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="portfolio-card rounded-2xl overflow-hidden reveal">
-                    <div class="aspect-[4/3] bg-gradient-to-br from-electric-blue/30 to-neon-purple/30 flex items-center justify-center relative">
-                        <div class="text-center p-8">
-                            <i data-lucide="scissors" class="w-16 h-16 text-electric-blue/60 mb-4"></i>
-                            <h3 class="text-xl font-bold">Style Studio</h3>
-                            <p class="text-gray-400 text-sm">Salon Website</p>
-                        </div>
-                        <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-6 z-10">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 rounded-full bg-electric-blue/20 text-electric-blue text-xs font-medium">Salon</span>
-                                <span class="px-3 py-1 rounded-full bg-neon-purple/20 text-neon-purple text-xs font-medium">Maps</span>
-                            </div>
-                            <h3 class="text-lg font-bold">Style Studio Salon</h3>
-                            <p class="text-gray-300 text-sm">Elegant salon website with online booking and Google Maps integration.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="portfolio-card rounded-2xl overflow-hidden reveal">
-                    <div class="aspect-[4/3] bg-gradient-to-br from-neon-purple/30 to-cyan-glow/30 flex items-center justify-center relative">
-                        <div class="text-center p-8">
-                            <i data-lucide="briefcase" class="w-16 h-16 text-neon-purple/60 mb-4"></i>
-                            <h3 class="text-xl font-bold">TechStart</h3>
-                            <p class="text-gray-400 text-sm">Startup Landing Page</p>
-                        </div>
-                        <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-6 z-10">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 rounded-full bg-neon-purple/20 text-neon-purple text-xs font-medium">Startup</span>
-                                <span class="px-3 py-1 rounded-full bg-cyan-glow/20 text-cyan-glow text-xs font-medium">Landing</span>
-                            </div>
-                            <h3 class="text-lg font-bold">TechStart Landing</h3>
-                            <p class="text-gray-300 text-sm">High-converting SaaS landing page with lead capture and analytics integration.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="portfolio-card rounded-2xl overflow-hidden reveal">
-                    <div class="aspect-[4/3] bg-gradient-to-br from-cyan-glow/30 to-electric-blue/30 flex items-center justify-center relative">
-                        <div class="text-center p-8">
-                            <i data-lucide="store" class="w-16 h-16 text-cyan-glow/60 mb-4"></i>
-                            <h3 class="text-xl font-bold">Local Mart</h3>
-                            <p class="text-gray-400 text-sm">Local Business Website</p>
-                        </div>
-                        <div class="portfolio-overlay absolute bottom-0 left-0 right-0 p-6 z-10">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 rounded-full bg-cyan-glow/20 text-cyan-glow text-xs font-medium">Local Biz</span>
-                                <span class="px-3 py-1 rounded-full bg-electric-blue/20 text-electric-blue text-xs font-medium">SEO</span>
-                            </div>
-                            <h3 class="text-lg font-bold">Local Mart</h3>
-                            <p class="text-gray-300 text-sm">SEO-optimized local business website with contact forms and social integration.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h3 style="font-family:Syne,sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:4px">${proj.title}</h3>
+            <p style="color:rgba(255,255,255,0.45);font-size:0.8rem">${proj.type}</p>
         </div>
-    </section>
+    `;
+    pc.appendChild(item);
 
-    <!-- Industries Section -->
-    <section class="relative py-24 sm:py-32" id="industries">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-                    <i data-lucide="users" class="w-4 h-4 text-cyan-glow"></i>
-                    <span class="text-sm font-medium text-gray-300">Industries We Serve</span>
-                </div>
-                <h2 class="font-outfit font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
-                    Trusted By <span class="gradient-text">Every Industry</span>
-                </h2>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                    We understand the unique needs of different businesses and deliver tailored solutions.
-                </p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <div class="industry-card glass rounded-2xl p-6 text-center reveal">
-                    <div class="industry-icon w-14 h-14 mx-auto mb-4 rounded-xl bg-electric-blue/10 flex items-center justify-center transition-all duration-300">
-                        <i data-lucide="stethoscope" class="w-7 h-7 text-gray-400 transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="font-semibold text-sm">Doctors</h3>
-                </div>
-                <div class="industry-card glass rounded-2xl p-6 text-center reveal">
-                    <div class="industry-icon w-14 h-14 mx-auto mb-4 rounded-xl bg-neon-purple/10 flex items-center justify-center transition-all duration-300">
-                        <i data-lucide="smile" class="w-7 h-7 text-gray-400 transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="font-semibold text-sm">Dentists</h3>
-                </div>
-                <div class="industry-card glass rounded-2xl p-6 text-center reveal">
-                    <div class="industry-icon w-14 h-14 mx-auto mb-4 rounded-xl bg-cyan-glow/10 flex items-center justify-center transition-all duration-300">
-                        <i data-lucide="heart-pulse" class="w-7 h-7 text-gray-400 transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="font-semibold text-sm">Clinics</h3>
-                </div>
-                <div class="industry-card glass rounded-2xl p-6 text-center reveal">
-                    <div class="industry-icon w-14 h-14 mx-auto mb-4 rounded-xl bg-electric-blue/10 flex items-center justify-center transition-all duration-300">
-                        <i data-lucide="scissors" class="w-7 h-7 text-gray-400 transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="font-semibold text-sm">Salons</h3>
-                </div>
-                <div class="industry-card glass rounded-2xl p-6 text-center reveal">
-                    <div class="industry-icon w-14 h-14 mx-auto mb-4 rounded-xl bg-neon-purple/10 flex items-center justify-center transition-all duration-300">
-                        <i data-lucide="dumbbell" class="w-7 h-7 text-gray-400 transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="font-semibold text-sm">Gyms</h3>
-                </div>
-                <div class="industry-card glass rounded-2xl p-6 text-center reveal">
-                    <div class="industry-icon w-14 h-14 mx-auto mb-4 rounded-xl bg-cyan-glow/10 flex items-center justify-center transition-all duration-300">
-                        <i data-lucide="rocket" class="w-7 h-7 text-gray-400 transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="font-semibold text-sm">Startups</h3>
-                </div>
-                <div class="industry-card glass rounded-2xl p-6 text-center reveal">
-                    <div class="industry-icon w-14 h-14 mx-auto mb-4 rounded-xl bg-electric-blue/10 flex items-center justify-center transition-all duration-300">
-                        <i data-lucide="store" class="w-7 h-7 text-gray-400 transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="font-semibold text-sm">Local Businesses</h3>
-                </div>
-                <div class="industry-card glass rounded-2xl p-6 text-center reveal">
-                    <div class="industry-icon w-14 h-14 mx-auto mb-4 rounded-xl bg-neon-purple/10 flex items-center justify-center transition-all duration-300">
-                        <i data-lucide="more-horizontal" class="w-7 h-7 text-gray-400 transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="font-semibold text-sm">& More</h3>
-                </div>
-            </div>
-        </div>
-    </section>
+    // dot
+    const dot=document.createElement('div');
+    dot.style.cssText=`width:8px;height:8px;border-radius:50%;background:${idx===0?'#00C8FF':'rgba(255,255,255,0.2)'};transition:background 0.3s;cursor:pointer`;
+    dot.addEventListener('click',()=>{
+        item.scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'});
+    });
+    dots.appendChild(dot);
 
-    <!-- Why Choose Us Section -->
-    <section class="relative py-24 sm:py-32" id="why-us">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-                    <i data-lucide="award" class="w-4 h-4 text-electric-blue"></i>
-                    <span class="text-sm font-medium text-gray-300">Why Choose Us</span>
-                </div>
-                <h2 class="font-outfit font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
-                    The Webnique <span class="gradient-text">Advantage</span>
-                </h2>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                    We go beyond just building websites. We build digital success stories.
-                </p>
-            </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="why-card glass rounded-2xl p-8 reveal">
-                    <div class="why-number text-5xl font-black text-gray-700 mb-4 transition-all duration-300">01</div>
-                    <div class="w-12 h-12 rounded-xl bg-electric-blue/10 flex items-center justify-center mb-4">
-                        <i data-lucide="zap" class="w-6 h-6 text-electric-blue"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Fast Delivery</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Get your website live in days, not months. Our streamlined process ensures quick turnaround without compromising quality.</p>
-                </div>
-                <div class="why-card glass rounded-2xl p-8 reveal">
-                    <div class="why-number text-5xl font-black text-gray-700 mb-4 transition-all duration-300">02</div>
-                    <div class="w-12 h-12 rounded-xl bg-neon-purple/10 flex items-center justify-center mb-4">
-                        <i data-lucide="gem" class="w-6 h-6 text-neon-purple"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Premium Quality</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Every website is crafted with attention to detail, modern design principles, and pixel-perfect execution.</p>
-                </div>
-                <div class="why-card glass rounded-2xl p-8 reveal">
-                    <div class="why-number text-5xl font-black text-gray-700 mb-4 transition-all duration-300">03</div>
-                    <div class="w-12 h-12 rounded-xl bg-cyan-glow/10 flex items-center justify-center mb-4">
-                        <i data-lucide="puzzle" class="w-6 h-6 text-cyan-glow"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Smart Integrations</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">WhatsApp, Maps, Payments, Booking — we integrate the tools your business needs to operate efficiently.</p>
-                </div>
-                <div class="why-card glass rounded-2xl p-8 reveal">
-                    <div class="why-number text-5xl font-black text-gray-700 mb-4 transition-all duration-300">04</div>
-                    <div class="w-12 h-12 rounded-xl bg-electric-blue/10 flex items-center justify-center mb-4">
-                        <i data-lucide="target" class="w-6 h-6 text-electric-blue"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Business Focused</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">We design with your business goals in mind — every element is optimized for conversions and growth.</p>
-                </div>
-                <div class="why-card glass rounded-2xl p-8 reveal">
-                    <div class="why-number text-5xl font-black text-gray-700 mb-4 transition-all duration-300">05</div>
-                    <div class="w-12 h-12 rounded-xl bg-neon-purple/10 flex items-center justify-center mb-4">
-                        <i data-lucide="shield-check" class="w-6 h-6 text-neon-purple"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Trusted Support</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Our relationship doesn't end at launch. We provide ongoing support to ensure your website stays perfect.</p>
-                </div>
-                <div class="why-card glass rounded-2xl p-8 reveal">
-                    <div class="why-number text-5xl font-black text-gray-700 mb-4 transition-all duration-300">06</div>
-                    <div class="w-12 h-12 rounded-xl bg-cyan-glow/10 flex items-center justify-center mb-4">
-                        <i data-lucide="trending-up" class="w-6 h-6 text-cyan-glow"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Growth Ready</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">SEO-friendly, mobile-responsive, and scalable — your website is built to grow with your business.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    // Draw after DOM
+    setTimeout(()=>{
+        const cv=document.getElementById('pcanv'+idx);
+        if(cv){ const ctx2=cv.getContext('2d'); proj.drawFn(ctx2,380,280); }
+    },100);
+});
 
-    <!-- Pricing Section -->
-    <section class="relative py-24 sm:py-32" id="pricing">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-                    <i data-lucide="tag" class="w-4 h-4 text-neon-purple"></i>
-                    <span class="text-sm font-medium text-gray-300">Pricing</span>
-                </div>
-                <h2 class="font-outfit font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
-                    Transparent <span class="gradient-text">Pricing</span>
-                </h2>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                    Choose the plan that fits your business needs. No hidden fees, no surprises.
-                </p>
-            </div>
-            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- Basic Plan -->
-                <div class="pricing-card glass rounded-3xl p-8 reveal">
-                    <div class="mb-8">
-                        <h3 class="text-xl font-bold mb-2">Basic Website</h3>
-                        <p class="text-gray-400 text-sm">Perfect for small businesses and startups</p>
-                    </div>
-                    <div class="mb-8">
-                        <span class="text-5xl font-black gradient-text">₹15,000</span>
-                        <span class="text-gray-400 text-sm ml-2">one-time</span>
-                    </div>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Responsive Design</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Contact Forms</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>WhatsApp Integration</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Google Maps</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Social Media Links</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>SEO Ready</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Mobile Responsive</span></li>
-                        <li class="flex items-center gap-3 text-sm text-gray-500"><i data-lucide="x" class="w-5 h-5 text-gray-600 flex-shrink-0"></i><span>Booking System</span></li>
-                        <li class="flex items-center gap-3 text-sm text-gray-500"><i data-lucide="x" class="w-5 h-5 text-gray-600 flex-shrink-0"></i><span>Payment Gateway</span></li>
-                        <li class="flex items-center gap-3 text-sm text-gray-500"><i data-lucide="x" class="w-5 h-5 text-gray-600 flex-shrink-0"></i><span>Priority Support</span></li>
-                    </ul>
-                    <a href="https://wa.me/917521900880?text=Hi%20Webnique!%20I%20am%20interested%20in%20the%20Basic%20Website%20plan%20(₹15,000).%20Please%20share%20more%20details." target="_blank" class="btn-outline w-full py-3 rounded-full text-center font-semibold flex items-center justify-center gap-2">
-                        <span>Get Started</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </a>
-                </div>
-                <!-- Premium Plan -->
-                <div class="pricing-card premium glass-strong rounded-3xl p-8 reveal">
-                    <div class="mb-8">
-                        <h3 class="text-xl font-bold mb-2">Premium Website</h3>
-                        <p class="text-gray-400 text-sm">For businesses that want it all</p>
-                    </div>
-                    <div class="mb-8">
-                        <span class="text-5xl font-black gradient-text">₹30,000</span>
-                        <span class="text-gray-400 text-sm ml-2">one-time</span>
-                    </div>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Everything in Basic</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Custom Premium Design</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Advanced Features</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Booking/Appointment System</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Payment Gateway Integration</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Advanced SEO Structure</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Speed Optimization</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Priority Support</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Ongoing Maintenance</span></li>
-                        <li class="flex items-center gap-3 text-sm"><i data-lucide="check" class="w-5 h-5 text-electric-blue flex-shrink-0"></i><span>Analytics Setup</span></li>
-                    </ul>
-                    <a href="https://wa.me/917521900880?text=Hi%20Webnique!%20I%20am%20interested%20in%20the%20Premium%20Website%20plan%20(₹30,000).%20Please%20share%20more%20details." target="_blank" class="btn-primary w-full py-3 rounded-full text-center font-semibold flex items-center justify-center gap-2">
-                        <span>Get Premium</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
+// Update dots on scroll
+pc.addEventListener('scroll',()=>{
+    const scrollLeft=pc.scrollLeft;
+    const itemW=pc.firstChild?pc.firstChild.offsetWidth+24:404;
+    const activeIdx=Math.round(scrollLeft/itemW);
+    dots.querySelectorAll('div').forEach((d,i)=>{
+        d.style.background=i===activeIdx?'#00C8FF':'rgba(255,255,255,0.2)';
+    });
+});
 
-    <!-- Testimonials Section -->
-    <section class="relative py-24 sm:py-32" id="testimonials">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-                    <i data-lucide="message-square" class="w-4 h-4 text-cyan-glow"></i>
-                    <span class="text-sm font-medium text-gray-300">Testimonials</span>
-                </div>
-                <h2 class="font-outfit font-bold text-4xl sm:text-5xl lg:text-6xl mb-4">
-                    Loved By <span class="gradient-text">Our Clients</span>
-                </h2>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                    Don't just take our word for it. Here's what our clients say about working with Webnique.
-                </p>
-            </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="testimonial-card glass rounded-2xl p-8 reveal">
-                    <div class="flex items-center gap-1 mb-4">
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                    </div>
-                    <p class="text-gray-300 text-sm leading-relaxed mb-6">"Webnique transformed our clinic's online presence completely. The WhatsApp integration has made patient communication so much easier. Highly recommended!"</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-electric-blue to-neon-purple flex items-center justify-center text-sm font-bold">DB</div>
-                        <div><div class="font-semibold text-sm">Dr. Mamta Bhura</div><div class="text-xs text-gray-400">Dermatologist, Kanpur</div></div>
-                    </div>
-                </div>
-                <div class="testimonial-card glass rounded-2xl p-8 reveal">
-                    <div class="flex items-center gap-1 mb-4">
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                    </div>
-                    <p class="text-gray-300 text-sm leading-relaxed mb-6">"Our e-commerce store sales increased by 40% after Webnique redesigned our website. The payment integration and mobile responsiveness are top-notch."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-neon-purple to-cyan-glow flex items-center justify-center text-sm font-bold">RK</div>
-                        <div><div class="font-semibold text-sm">Rahul Kumar</div><div class="text-xs text-gray-400">Luxe Fashion Owner</div></div>
-                    </div>
-                </div>
-                <div class="testimonial-card glass rounded-2xl p-8 reveal">
-                    <div class="flex items-center gap-1 mb-4">
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                    </div>
-                    <p class="text-gray-300 text-sm leading-relaxed mb-6">"The booking system Webnique built for our gym has been a game-changer. Members love the convenience, and our admin work has been cut in half."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-glow to-electric-blue flex items-center justify-center text-sm font-bold">AS</div>
-                        <div><div class="font-semibold text-sm">Amit Singh</div><div class="text-xs text-gray-400">FitPro Gym Owner</div></div>
-                    </div>
-                </div>
-                <div class="testimonial-card glass rounded-2xl p-8 reveal">
-                    <div class="flex items-center gap-1 mb-4">
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                    </div>
-                    <p class="text-gray-300 text-sm leading-relaxed mb-6">"As a startup founder, I needed a website that could scale with us. Webnique delivered exactly that — modern, fast, and conversion-focused."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-electric-blue to-neon-purple flex items-center justify-center text-sm font-bold">SP</div>
-                        <div><div class="font-semibold text-sm">Sneha Patel</div><div class="text-xs text-gray-400">TechStart Founder</div></div>
-                    </div>
-                </div>
-                <div class="testimonial-card glass rounded-2xl p-8 reveal">
-                    <div class="flex items-center gap-1 mb-4">
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                    </div>
-                    <p class="text-gray-300 text-sm leading-relaxed mb-6">"Our salon's online bookings have tripled since Webnique built our new website. The design is stunning and the Google Maps integration is perfect."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-neon-purple to-cyan-glow flex items-center justify-center text-sm font-bold">PG</div>
-                        <div><div class="font-semibold text-sm">Priya Gupta</div><div class="text-xs text-gray-400">Style Studio Owner</div></div>
-                    </div>
-                </div>
-                <div class="testimonial-card glass rounded-2xl p-8 reveal">
-                    <div class="flex items-center gap-1 mb-4">
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
-                    </div>
-                    <p class="text-gray-300 text-sm leading-relaxed mb-6">"Webnique's ongoing support is incredible. They keep our website updated and running smoothly. Best investment we've made for our business."</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-glow to-electric-blue flex items-center justify-center text-sm font-bold">VR</div>
-                        <div><div class="font-semibold text-sm">Vikram Rao</div><div class="text-xs text-gray-400">Local Mart Owner</div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+// ===================== TESTIMONIALS =====================
+const testis=[
+    {
+        name:'Dr. Priya Sharma', role:'Dermatologist, Kanpur', initials:'PS',
+        quote:'Webnique transformed our clinic\'s online presence. The WhatsApp integration has made patient communication effortless. Appointment bookings tripled in the first month!',
+        website:'SkinClinic', drawFn: function(ctx,w,h){ drawSkinClinic(ctx,w,h); }
+    },
+    {
+        name:'Rahul Kumar', role:'Luxe Fashion Owner', initials:'RK',
+        quote:'E-commerce sales increased by 40% after Webnique redesigned our store. The payment integration and mobile experience are absolutely world-class.',
+        website:'Luxe Fashion', drawFn: function(ctx,w,h){ drawFashion(ctx,w,h); }
+    },
+    {
+        name:'Amit Singh', role:'FitPro Gym Owner', initials:'AS',
+        quote:'The booking system Webnique built has been a game-changer. Our admin work has been cut in half and members love the convenience.',
+        website:'FitPro Gym', drawFn: function(ctx,w,h){ drawGym(ctx,w,h); }
+    },
+    {
+        name:'Priya Gupta', role:'Style Studio Owner', initials:'PG',
+        quote:'Salon bookings have tripled! The design is stunning and Google Maps integration is perfect. Webnique exceeded every expectation.',
+        website:'Style Studio', drawFn: function(ctx,w,h){ drawSalon(ctx,w,h); }
+    },
+];
 
-    <!-- Contact / CTA Section -->
-    <section class="relative py-24 sm:py-32" id="contact">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="reveal">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-                        <i data-lucide="rocket" class="w-4 h-4 text-electric-blue"></i>
-                        <span class="text-sm font-medium text-gray-300">Get Started</span>
-                    </div>
-                    <h2 class="font-outfit font-bold text-4xl sm:text-5xl lg:text-6xl mb-6 leading-tight">
-                        Launch Your Business<br><span class="gradient-text">Online Today</span>
-                    </h2>
-                    <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                        Ready to transform your digital presence? Let's discuss your project and create something extraordinary together.
-                    </p>
-                    <div class="space-y-4 mb-8">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-electric-blue/10 flex items-center justify-center">
-                                <i data-lucide="phone" class="w-5 h-5 text-electric-blue"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-400">Call Us</div>
-                                <a href="tel:+917521900880" class="font-semibold hover:text-electric-blue transition-colors">+91 75219 00880</a>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-purple/10 flex items-center justify-center">
-                                <i data-lucide="mail" class="w-5 h-5 text-neon-purple"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-400">Email Us</div>
-                                <a href="mailto:hello@webnique.in" class="font-semibold hover:text-neon-purple transition-colors">hello@webnique.in</a>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-cyan-glow/10 flex items-center justify-center">
-                                <i data-lucide="map-pin" class="w-5 h-5 text-cyan-glow"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-400">Location</div>
-                                <span class="font-semibold">Kanpur, India</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap gap-4">
-                        <a href="https://wa.me/917521900880?text=Hi%20Webnique!%20I%20want%20to%20discuss%20my%20website%20project.%20Please%20get%20in%20touch." target="_blank" class="btn-primary px-8 py-4 rounded-full text-base font-semibold text-white flex items-center gap-2">
-                            <i data-lucide="message-circle" class="w-5 h-5"></i>
-                            <span>Chat on WhatsApp</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="glass-strong rounded-3xl p-8">
-                        <h3 class="text-2xl font-bold mb-6">Send Us a Message</h3>
-                        <form id="contactForm" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Your Name</label>
-                                <input type="text" id="name" class="form-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-500" placeholder="John Doe" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
-                                <input type="email" id="email" class="form-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-500" placeholder="john@example.com" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Phone Number</label>
-                                <input type="tel" id="phone" class="form-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-500" placeholder="+91 98765 43210">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Service Interested In</label>
-                                <select id="service" class="form-input w-full px-4 py-3 rounded-xl text-white">
-                                    <option value="">Select a service...</option>
-                                    <option value="custom">Custom Website Development</option>
-                                    <option value="business">Business Website</option>
-                                    <option value="doctor">Doctor / Clinic Website</option>
-                                    <option value="portfolio">Portfolio Website</option>
-                                    <option value="landing">Landing Page</option>
-                                    <option value="ecommerce">E-commerce Website</option>
-                                    <option value="redesign">Website Redesign</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Your Message</label>
-                                <textarea id="message" rows="4" class="form-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-500 resize-none" placeholder="Tell us about your project..."></textarea>
-                            </div>
-                            <button type="submit" class="btn-primary w-full py-4 rounded-xl text-base font-semibold text-white flex items-center justify-center gap-2">
-                                <span>Send Message</span><i data-lucide="send" class="w-5 h-5"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+const tg=document.getElementById('testiGrid');
+testis.forEach((t,idx)=>{
+    const card=document.createElement('div');
+    card.className='testi-card glass rounded-2xl overflow-hidden reveal border border-transparent';
+    card.innerHTML=`
+        <canvas id="tcanv${idx}" width="600" height="200" style="display:block;width:100%;border-bottom:1px solid rgba(255,255,255,0.06)"></canvas>
+        <div style="padding:24px">
+            <div style="display:flex;gap:2px;margin-bottom:14px">
+                ${[...Array(5)].map(()=>'<svg style="width:14px;height:14px;color:#FBBF24;fill:#FBBF24" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>').join('')}
             </div>
-        </div>
-    </section>
-
-    <!-- Marquee Section -->
-    <section class="relative py-12 overflow-hidden">
-        <div class="marquee-container">
-            <div class="marquee-content">
-                <span class="text-6xl sm:text-8xl font-black text-gray-800 mx-8">WEBNIQUE</span>
-                <span class="text-6xl sm:text-8xl font-black gradient-text mx-8">PREMIUM WEBSITES</span>
-                <span class="text-6xl sm:text-8xl font-black text-gray-800 mx-8">BUSINESS GROWTH</span>
-                <span class="text-6xl sm:text-8xl font-black gradient-text mx-8">SMART INTEGRATIONS</span>
-                <span class="text-6xl sm:text-8xl font-black text-gray-800 mx-8">FAST DELIVERY</span>
-                <span class="text-6xl sm:text-8xl font-black gradient-text mx-8">TRUSTED SUPPORT</span>
-                <span class="text-6xl sm:text-8xl font-black text-gray-800 mx-8">WEBNIQUE</span>
-                <span class="text-6xl sm:text-8xl font-black gradient-text mx-8">PREMIUM WEBSITES</span>
-                <span class="text-6xl sm:text-8xl font-black text-gray-800 mx-8">BUSINESS GROWTH</span>
-                <span class="text-6xl sm:text-8xl font-black gradient-text mx-8">SMART INTEGRATIONS</span>
-                <span class="text-6xl sm:text-8xl font-black text-gray-800 mx-8">FAST DELIVERY</span>
-                <span class="text-6xl sm:text-8xl font-black gradient-text mx-8">TRUSTED SUPPORT</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="relative py-16 border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+            <p style="color:rgba(255,255,255,0.65);font-size:0.875rem;line-height:1.7;margin-bottom:18px">"${t.quote}"</p>
+            <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#00C8FF,#A020D0);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0">${t.initials}</div>
                 <div>
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-electric-blue to-neon-purple flex items-center justify-center">
-                            <span class="font-outfit font-bold text-white text-lg">W</span>
-                        </div>
-                        <span class="font-outfit font-bold text-xl">Webnique</span>
-                    </div>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-6">Premium web development agency building websites that grow businesses.</p>
-                    <div class="flex gap-3">
-                        <a href="#" class="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-electric-blue/20 transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-electric-blue/20 transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-electric-blue/20 transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-electric-blue/20 transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
-                    </div>
+                    <div style="font-weight:700;font-size:0.875rem;font-family:Syne,sans-serif">${t.name}</div>
+                    <div style="color:rgba(255,255,255,0.4);font-size:0.75rem">${t.role}</div>
                 </div>
-                <div>
-                    <h4 class="font-bold mb-6">Services</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">Custom Websites</a></li>
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">Business Websites</a></li>
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">E-commerce</a></li>
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">Landing Pages</a></li>
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">Website Redesign</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-6">Integrations</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">WhatsApp Integration</a></li>
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">Google Maps</a></li>
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">Payment Gateway</a></li>
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">Booking System</a></li>
-                        <li><a href="#services" class="text-gray-400 text-sm hover:text-electric-blue transition-colors">SEO Optimization</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-6">Contact</h4>
-                    <ul class="space-y-3">
-                        <li class="flex items-center gap-2 text-gray-400 text-sm">
-                            <i data-lucide="phone" class="w-4 h-4 text-electric-blue"></i>
-                            <a href="tel:+917521900880" class="hover:text-white transition-colors">+91 75219 00880</a>
-                        </li>
-                        <li class="flex items-center gap-2 text-gray-400 text-sm">
-                            <i data-lucide="mail" class="w-4 h-4 text-neon-purple"></i>
-                            <a href="mailto:hello@webnique.in" class="hover:text-white transition-colors">hello@webnique.in</a>
-                        </li>
-                        <li class="flex items-center gap-2 text-gray-400 text-sm">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-cyan-glow"></i>
-                            <span>Kanpur, India</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-gray-500 text-sm"> Webnique. All rights reserved.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="text-gray-500 text-sm hover:text-white transition-colors">Privacy Policy</a>
-                    <a href="#" class="text-gray-500 text-sm hover:text-white transition-colors">Terms of Service</a>
-                </div>
+                <div style="margin-left:auto;padding:3px 10px;border-radius:20px;background:rgba(0,200,255,0.1);color:#00C8FF;font-size:0.65rem;font-weight:600">${t.website}</div>
             </div>
         </div>
-    </footer>
+    `;
+    tg.appendChild(card);
+    setTimeout(()=>{
+        const cv=document.getElementById('tcanv'+idx);
+        if(cv){ const ctx2=cv.getContext('2d'); t.drawFn(ctx2,600,200); }
+    },150);
+});
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/917521900880?text=Hi%20Webnique!%20I%20am%20interested%20in%20your%20website%20services.%20Can%20we%20discuss%20my%20project?" target="_blank" class="whatsapp-btn" aria-label="Chat on WhatsApp">
-        <i data-lucide="message-circle" class="w-7 h-7 text-white"></i>
-    </a>
-
-    <!-- JavaScript -->
-    <script>
-        // Initialize Lucide Icons
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
+// ===================== ABOUT CANVAS =====================
+setTimeout(()=>{
+    const ac=document.getElementById('aboutCanvas');
+    if(ac){
+        ac.width=ac.offsetWidth||560; ac.height=340;
+        const ctx=ac.getContext('2d');
+        // draw a mini "agency dashboard"
+        ctx.fillStyle='#0A0A16'; ctx.fillRect(0,0,ac.width,340);
+        // Header bar
+        ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.fillRect(0,0,ac.width,44);
+        ctx.fillStyle='#00C8FF'; ctx.font='bold 16px Syne, sans-serif';
+        ctx.fillText('Webnique Dashboard',20,28);
+        ctx.fillStyle='rgba(0,200,255,0.6)'; ctx.font='9px DM Sans, sans-serif';
+        ctx.textAlign='right'; ctx.fillText('● All systems live',ac.width-20,28); ctx.textAlign='left';
+        // Stat cards
+        [{v:'150+',l:'Sites Built',c:'#00C8FF'},{v:'50+',l:'Happy Clients',c:'#A020D0'},{v:'99%',l:'Satisfaction',c:'#00F5FF'}].forEach(({v,l,c},i)=>{
+            ctx.fillStyle='rgba(255,255,255,0.04)'; roundedRect(ctx,16+i*(ac.width/3-8),60,ac.width/3-24,64,10); ctx.fill();
+            ctx.strokeStyle=c+'40'; ctx.lineWidth=1;
+            roundedRect(ctx,16+i*(ac.width/3-8),60,ac.width/3-24,64,10); ctx.stroke();
+            ctx.fillStyle=c; ctx.font='bold 22px Syne, sans-serif';
+            ctx.fillText(v,24+i*(ac.width/3-8),96);
+            ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='8px DM Sans, sans-serif';
+            ctx.fillText(l,24+i*(ac.width/3-8),112);
         });
-
-        // Loading Screen
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 2500);
+        // Chart area
+        ctx.fillStyle='rgba(255,255,255,0.03)'; roundedRect(ctx,16,140,ac.width-32,100,10); ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+        roundedRect(ctx,16,140,ac.width-32,100,10); ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px DM Sans, sans-serif';
+        ctx.fillText('Project Deliveries – 2024',28,158);
+        // Draw bars
+        const barVals=[40,65,52,80,70,90,75,110,95,120,105,135];
+        const maxV=135;
+        barVals.forEach((bv,bi)=>{
+            const bx=28+bi*(ac.width-56)/12; const bh=(bv/maxV)*60; const by=220-bh;
+            const bg=ctx.createLinearGradient(bx,by,bx,220);
+            bg.addColorStop(0,'#00C8FF'); bg.addColorStop(1,'#A020D0');
+            ctx.fillStyle=bg; roundedRect(ctx,bx,by,(ac.width-56)/14,bh,3); ctx.fill();
         });
-
-        // Three.js Background
-        (function() {
-            const canvas = document.getElementById('three-canvas');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-            // Create floating particles
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 800;
-            const posArray = new Float32Array(particlesCount * 3);
-            const colorsArray = new Float32Array(particlesCount * 3);
-
-            for (let i = 0; i < particlesCount * 3; i += 3) {
-                posArray[i] = (Math.random() - 0.5) * 15;
-                posArray[i + 1] = (Math.random() - 0.5) * 15;
-                posArray[i + 2] = (Math.random() - 0.5) * 15;
-
-                const colorChoice = Math.random();
-                if (colorChoice < 0.33) {
-                    colorsArray[i] = 0.0; colorsArray[i+1] = 0.83; colorsArray[i+2] = 1.0;
-                } else if (colorChoice < 0.66) {
-                    colorsArray[i] = 0.72; colorsArray[i+1] = 0.16; colorsArray[i+2] = 0.87;
-                } else {
-                    colorsArray[i] = 0.0; colorsArray[i+1] = 0.94; colorsArray[i+2] = 1.0;
-                }
-            }
-
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
-
-            const particlesMaterial = new THREE.PointsMaterial({
-                size: 0.02,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending
-            });
-
-            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-            scene.add(particlesMesh);
-
-            // Create wireframe torus
-            const torusGeometry = new THREE.TorusKnotGeometry(1.5, 0.4, 100, 16);
-            const torusMaterial = new THREE.MeshBasicMaterial({
-                color: 0x00D4FF,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.15
-            });
-            const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-            torus.position.set(3, 1, -5);
-            scene.add(torus);
-
-            // Second wireframe shape
-            const torus2Geometry = new THREE.IcosahedronGeometry(1.2, 1);
-            const torus2Material = new THREE.MeshBasicMaterial({
-                color: 0xB829DD,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.12
-            });
-            const torus2 = new THREE.Mesh(torus2Geometry, torus2Material);
-            torus2.position.set(-3, -1, -4);
-            scene.add(torus2);
-
-            // Floating rings
-            const ringGeometry = new THREE.RingGeometry(2, 2.1, 64);
-            const ringMaterial = new THREE.MeshBasicMaterial({
-                color: 0x00F0FF,
-                side: THREE.DoubleSide,
-                transparent: true,
-                opacity: 0.08
-            });
-            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-            ring.position.set(0, 2, -6);
-            scene.add(ring);
-
-            camera.position.z = 5;
-
-            // Mouse interaction
-            let mouseX = 0;
-            let mouseY = 0;
-            let targetX = 0;
-            let targetY = 0;
-
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-            });
-
-            // Animation
-            function animate() {
-                requestAnimationFrame(animate);
-                targetX += (mouseX - targetX) * 0.02;
-                targetY += (mouseY - targetY) * 0.02;
-
-                particlesMesh.rotation.y += 0.001;
-                particlesMesh.rotation.x += 0.0005;
-                particlesMesh.position.x = targetX * 0.5;
-                particlesMesh.position.y = targetY * 0.5;
-
-                torus.rotation.x += 0.005;
-                torus.rotation.y += 0.003;
-                torus.position.x = 3 + targetX * 0.3;
-                torus.position.y = 1 + targetY * 0.3;
-
-                torus2.rotation.x -= 0.004;
-                torus2.rotation.y += 0.006;
-                torus2.position.x = -3 + targetX * 0.3;
-                torus2.position.y = -1 + targetY * 0.3;
-
-                ring.rotation.x += 0.002;
-                ring.rotation.y += 0.001;
-                ring.scale.setScalar(1 + Math.sin(Date.now() * 0.001) * 0.1);
-
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            // Resize handler
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        })();
-
-        // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Hero Animations
-        gsap.from('#heroTitle', {
-            opacity: 0,
-            y: 60,
-            duration: 1.2,
-            ease: 'power3.out',
-            delay: 0.5
+        // Active projects
+        ctx.fillStyle='rgba(255,255,255,0.03)'; roundedRect(ctx,16,252,ac.width-32,75,10); ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px DM Sans, sans-serif';
+        ctx.fillText('Active Projects',28,270);
+        [['SkinClinic Website','87%','#00C8FF'],['FashionStore Revamp','62%','#A020D0'],['GymApp Integration','45%','#00F5FF']].forEach(([name,pct,c],pi)=>{
+            ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='8px DM Sans, sans-serif';
+            ctx.fillText(name,28,285+pi*16);
+            ctx.textAlign='right'; ctx.fillStyle=c; ctx.fillText(pct,ac.width-28,285+pi*16); ctx.textAlign='left';
+            ctx.fillStyle='rgba(255,255,255,0.07)'; roundedRect(ctx,28+(ac.width-56)*0.4,278+pi*16,(ac.width-56)*0.45,5,3); ctx.fill();
+            ctx.fillStyle=c; roundedRect(ctx,28+(ac.width-56)*0.4,278+pi*16,(ac.width-56)*0.45*parseFloat(pct)/100,5,3); ctx.fill();
         });
+    }
+},200);
 
-        gsap.from('#heroSubtitle', {
-            opacity: 0,
-            y: 40,
-            duration: 1,
-            ease: 'power3.out',
-            delay: 0.8
-        });
+// ===================== GSAP =====================
+gsap.registerPlugin(ScrollTrigger);
+gsap.from('#heroTitle',{opacity:0,y:60,duration:1.2,ease:'power3.out',delay:0.5});
+gsap.from('#heroSub',{opacity:0,y:40,duration:1,ease:'power3.out',delay:0.8});
+gsap.from('#heroCTA',{opacity:0,y:30,duration:0.8,ease:'power3.out',delay:1.1});
+gsap.from('#heroStats > div',{opacity:0,y:30,stagger:0.15,duration:0.6,ease:'power3.out',delay:1.4});
 
-        gsap.from('#heroCTA', {
-            opacity: 0,
-            y: 30,
-            duration: 0.8,
-            ease: 'power3.out',
-            delay: 1.1
-        });
+document.querySelectorAll('.reveal').forEach(el=>{
+    gsap.to(el,{scrollTrigger:{trigger:el,start:'top 86%',toggleActions:'play none none none'},opacity:1,y:0,duration:0.85,ease:'power3.out'});
+});
 
-        gsap.from('#heroStats > div', {
-            opacity: 0,
-            y: 30,
-            duration: 0.6,
-            stagger: 0.15,
-            ease: 'power3.out',
-            delay: 1.4
-        });
+// Counters
+document.querySelectorAll('.counter').forEach(c=>{
+    const target=parseInt(c.dataset.target);
+    ScrollTrigger.create({trigger:c,start:'top 80%',onEnter:()=>{
+        gsap.to(c,{innerText:target,duration:2,snap:{innerText:1},ease:'power2.out'});
+    }});
+});
 
-        // Scroll Reveal Animations
-        const revealElements = document.querySelectorAll('.reveal');
-        revealElements.forEach((element) => {
-            gsap.to(element, {
-                scrollTrigger: {
-                    trigger: element,
-                    start: 'top 85%',
-                    end: 'bottom 15%',
-                    toggleActions: 'play none none none'
-                },
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: 'power3.out'
-            });
-        });
+// Nav glass
+window.addEventListener('scroll',()=>{
+    document.getElementById('navBg').style.opacity=window.scrollY>50?'1':'0';
+});
 
-        // Counter Animation
-        const counters = document.querySelectorAll('.counter-value');
-        counters.forEach(counter => {
-            const target = parseInt(counter.getAttribute('data-target'));
-            ScrollTrigger.create({
-                trigger: counter,
-                start: 'top 80%',
-                onEnter: () => {
-                    gsap.to(counter, {
-                        innerText: target,
-                        duration: 2,
-                        snap: { innerText: 1 },
-                        ease: 'power2.out'
-                    });
-                }
-            });
-        });
+// Mobile menu
+const mob=document.getElementById('mobMenu');
+document.getElementById('mobBtn').onclick=()=>{ mob.classList.add('open'); document.body.style.overflow='hidden'; };
+document.getElementById('closeMob').onclick=()=>{ mob.classList.remove('open'); document.body.style.overflow=''; };
+document.querySelectorAll('.mob-link').forEach(l=>l.addEventListener('click',()=>{ mob.classList.remove('open'); document.body.style.overflow=''; }));
 
-        // Navigation Scroll Effect
-        const navbar = document.getElementById('navbar');
-        const navGlass = document.getElementById('navGlass');
+// Contact form
+document.getElementById('contactForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    const n=document.getElementById('cf-name').value;
+    const ph=document.getElementById('cf-phone').value;
+    const sv=document.getElementById('cf-service');
+    const sn=sv.options[sv.selectedIndex].text;
+    const msg=document.getElementById('cf-msg').value;
+    const txt=`Hi Webnique!%0A%0AName: ${encodeURIComponent(n)}%0APhone: ${encodeURIComponent(ph)}%0AService: ${encodeURIComponent(sn)}%0AMessage: ${encodeURIComponent(msg)}`;
+    window.open(`https://wa.me/917619920006?text=${txt}`,'_blank');
+});
 
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navGlass.style.opacity = '1';
-            } else {
-                navGlass.style.opacity = '0';
-            }
-        });
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',e=>{
+        e.preventDefault();
+        const t=document.querySelector(a.getAttribute('href'));
+        if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+});
 
-        // Mobile Menu
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const closeMobileMenu = document.getElementById('closeMobileMenu');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-
-        closeMobileMenu.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-
-        mobileNavLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        });
-
-        // Cursor Glow Effect (Desktop)
-        const cursorGlow = document.getElementById('cursorGlow');
-        if (cursorGlow && window.innerWidth > 1024) {
-            document.addEventListener('mousemove', (e) => {
-                cursorGlow.style.left = e.clientX + 'px';
-                cursorGlow.style.top = e.clientY + 'px';
-            });
-        }
-
-        // Tilt Effect for Cards
-        const tiltCards = document.querySelectorAll('.tilt-card');
-        tiltCards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = (y - centerY) / 20;
-                const rotateY = (centerX - x) / 20;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.02)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
-            });
-        });
-
-        // Contact Form Handler
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const service = document.getElementById('service').value;
-            const message = document.getElementById('message').value;
-
-            let serviceText = service ? document.getElementById('service').options[document.getElementById('service').selectedIndex].text : 'Not specified';
-
-            const whatsappMessage = `Hi Webnique!%0A%0AI am ${encodeURIComponent(name)}.%0AEmail: ${encodeURIComponent(email)}%0APhone: ${encodeURIComponent(phone || 'Not provided')}%0AService: ${encodeURIComponent(serviceText)}%0A%0AMessage: ${encodeURIComponent(message || 'No additional message')}%0A%0APlease get in touch with me.`;
-
-            window.open(`https://wa.me/917521900880?text=${whatsappMessage}`, '_blank');
-        });
-
-        // Smooth Scroll for Anchor Links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Parallax Effect for Hero
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const heroTitle = document.getElementById('heroTitle');
-            const heroSubtitle = document.getElementById('heroSubtitle');
-
-            if (heroTitle) {
-                heroTitle.style.transform = `translateY(${scrolled * 0.3}px)`;
-            }
-            if (heroSubtitle) {
-                heroSubtitle.style.transform = `translateY(${scrolled * 0.2}px)`;
-            }
-        });
-
-        // Active Navigation Link
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-link');
-
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (pageYOffset >= sectionTop - 200) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('text-white');
-                link.classList.add('text-gray-300');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.remove('text-gray-300');
-                    link.classList.add('text-white');
-                }
-            });
-        });
-    </script>
+// Hero parallax
+window.addEventListener('scroll',()=>{
+    const s=window.pageYOffset;
+    const ht=document.getElementById('heroTitle');
+    const hs=document.getElementById('heroSub');
+    if(ht) ht.style.transform=`translateY(${s*0.25}px)`;
+    if(hs) hs.style.transform=`translateY(${s*0.15}px)`;
+});
+</script>
 </body>
 </html>
